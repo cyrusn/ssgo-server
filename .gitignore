@@ -14,5 +14,10 @@
 .glide/
 
 # Custom
-/data
-/database
+/data/*
+/database/*
+/public/*
+
+*.db
+
+*_test.go
