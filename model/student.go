@@ -78,8 +78,26 @@ func (db *DB) CreateStudentTable() error {
 	if err != nil {
 		return err
 	}
-	log.Println("STUDENTS table created")
+	// log.Println("STUDENTS table created")
 	return nil
+}
+
+// UpdatePriorityInStudentsTable will update student's priority
+func (db *DB) UpdatePriorityInStudentsTable(username string, p []int) error {
+	priority, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+
+	statement := `UPDATE
+	 	students
+	set
+		priority = ?
+    WHERE username = ?;
+	`
+
+	_, err = db.Exec(statement, priority, username)
+	return err
 }
 
 // AllStudents queries all students from database
