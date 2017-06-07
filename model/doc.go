@@ -17,8 +17,8 @@ actions in database
   - username string
   - classCode string
   - classNo int
-  - priority []int
-  - isConfirmed bool
+  - priority []int (BLOB in sqlite3)
+  - isConfirmed bool (int in sqlite3)
 
 - RANK store the academic ranking for each Registry for certain Submission
   - username
