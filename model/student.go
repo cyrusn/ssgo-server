@@ -13,9 +13,8 @@ func init() {
 // Student stores information for users including studnt, teacher and admin
 type Student struct {
 	Username    string
-	Password    string
-	Name        string
-	Cname       string
+	ClassCode   string
+	ClassNo     int
 	Priority    []int
 	IsConfirmed bool
 }
@@ -23,11 +22,11 @@ type Student struct {
 const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS students (
 	username TEXT UNIQUE NOT NULL,
-	password TEXT NOT NULL,
-	name TEXT NOT NULL,
-	cname TEXT NOT NULL,
+	classcode TEXT NOT NULL,
+	classno INTEGER NOT NULL,
 	priority BLOB,
-	isConfirmed INTEGER
+	is_confirmed INTEGER,
+	FOREIGN KEY(username) REFERENCES user(username)
 );`
 
 func convertBool2Int(b bool) int {
@@ -49,8 +48,8 @@ func (db *DB) CreateStudentTable() error {
 	return db.createTable(studentTableSchema)
 }
 
-// AddStudent add new student to database
-func (db *DB) AddStudent(s Student) error {
+// InsertStudent add new student to database
+func (db *DB) InsertStudent(s Student) error {
 
 	priority, err := json.Marshal(s.Priority)
 	if err != nil {
@@ -60,16 +59,14 @@ func (db *DB) AddStudent(s Student) error {
 	_, err = db.Exec(
 		`INSERT INTO students (
 			username,
-			password,
-			name,
-			cname,
+			classcode,
+			classno,
 			priority,
-			isConfirmed
-		) values (?, ?, ?, ?, ?, ?)`,
+			is_confirmed
+		) values (?, ?, ?, ?, ?)`,
 		s.Username,
-		s.Password,
-		s.Name,
-		s.Cname,
+		s.ClassCode,
+		s.ClassNo,
 		priority,
 		convertBool2Int(s.IsConfirmed),
 	)
@@ -92,7 +89,7 @@ func (db *DB) UpdatePriorityInStudentsTable(username string, p []int) error {
 
 // UpdateIsConfirmedInStudentsTable will update student's isConfirmed
 func (db *DB) UpdateIsConfirmedInStudentsTable(username string, b bool) error {
-	statement := "UPDATE students set isConfirmed = ? WHERE username = ?;"
+	statement := "UPDATE students set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
 	return err
@@ -114,7 +111,6 @@ func (db *DB) AllStudents() ([]*Student, error) {
 	}
 
 	defer rows.Close()
-
 	var students []*Student
 
 	for rows.Next() {
@@ -137,9 +133,8 @@ func scanStudent(v interface{}) (*Student, error) {
 
 	var args = []interface{}{
 		&s.Username,
-		&s.Password,
-		&s.Name,
-		&s.Cname,
+		&s.ClassCode,
+		&s.ClassNo,
 		&priority,
 		&isConfirmed,
 	}
