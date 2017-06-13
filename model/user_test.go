@@ -1,14 +1,18 @@
-package model
+package model_test
 
-import "testing"
+import (
+	"testing"
 
-var userList = []User{
-	User{"student1", "password1", "Alice", "愛麗絲", false},
-	User{"student2", "password2", "Bob", "鮑伯", false},
-	User{"student3", "password3", "Charlie", "查利", false},
-	User{"teacher1", "password4", "Dave", "戴夫", true},
-	User{"teacher2", "password5", "Eve", "伊夫", true},
-	User{"teacher3", "password6", "Frank", "佛蘭克", true},
+	"github.com/cyrusn/ssgo/model"
+)
+
+var userList = []model.User{
+	model.User{"student1", "password1", "Alice", "愛麗絲", false},
+	model.User{"student2", "password2", "Bob", "鮑伯", false},
+	model.User{"student3", "password3", "Charlie", "查利", false},
+	model.User{"teacher1", "password4", "Dave", "戴夫", true},
+	model.User{"teacher2", "password5", "Eve", "伊夫", true},
+	model.User{"teacher3", "password6", "Frank", "佛蘭克", true},
 }
 
 var TestUserTable = func(t *testing.T) {

@@ -28,6 +28,5 @@ func (db *DB) createTable(schema string) error {
 	if err != nil {
 		return err
 	}
-	// log.Println("STUDENTS table created")
 	return nil
 }

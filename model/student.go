@@ -3,12 +3,7 @@ package model
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 )
-
-func init() {
-	log.SetFlags(log.Lshortfile + log.LstdFlags)
-}
 
 // Student stores information for users including studnt, teacher and admin
 type Student struct {
@@ -71,7 +66,10 @@ func (db *DB) InsertStudent(s Student) error {
 		convertBool2Int(s.IsConfirmed),
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // UpdatePriorityInStudentsTable will update student's priority

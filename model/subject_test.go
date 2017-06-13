@@ -1,14 +1,16 @@
-package model
+package model_test
 
 import (
 	"testing"
+
+	"github.com/cyrusn/ssgo/model"
 )
 
-var subjectList = []Subject{
-	Subject{"bio", 1, "Biology", "生物", 0},
-	Subject{"bafs", 1, "Business, Accounting and Financial Studies", "企業、會計與財務概論", 0},
-	Subject{"ict", 2, "Information and Communication Technology", "資訊及通訊科技", 0},
-	Subject{"econ", 2, "Economics", "經濟", 0},
+var subjectList = []model.Subject{
+	model.Subject{"bio", 1, "Biology", "生物", 0},
+	model.Subject{"bafs", 1, "Business, Accounting and Financial Studies", "企業、會計與財務概論", 0},
+	model.Subject{"ict", 2, "Information and Communication Technology", "資訊及通訊科技", 0},
+	model.Subject{"econ", 2, "Economics", "經濟", 0},
 }
 
 var TestSubjectTable = func(t *testing.T) {

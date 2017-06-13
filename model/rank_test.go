@@ -1,11 +1,15 @@
-package model
+package model_test
 
-import "testing"
+import (
+	"testing"
 
-var studentRanks = []Rank{
-	Rank{"student1", 3},
-	Rank{"student2", 1},
-	Rank{"student3", 2},
+	"github.com/cyrusn/ssgo/model"
+)
+
+var studentRanks = []model.Rank{
+	model.Rank{"student1", 3},
+	model.Rank{"student2", 1},
+	model.Rank{"student3", 2},
 }
 
 var TestRankTable = func(t *testing.T) {

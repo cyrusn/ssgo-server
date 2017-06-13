@@ -1,14 +1,19 @@
-package model
+package model_test
 
-import "testing"
+import (
+	"testing"
 
-var studentList = []Student{
-	Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false},
-	Student{"student2", "3A", 2, []int{3, 2, 1, 0}, false},
-	Student{"student3", "3A", 3, []int{}, true},
+	"github.com/cyrusn/ssgo/model"
+)
+
+var studentList = []model.Student{
+	model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false},
+	model.Student{"student2", "3A", 2, []int{3, 2, 1, 0}, false},
+	model.Student{"student3", "3A", 3, []int{}, true},
 }
 
 var TestStudentTable = func(t *testing.T) {
+	t.Run("Panic Test All Students", PanicTestAllStudent)
 	t.Run("Create student table", TestCreateStudentTable)
 	t.Run("Add Students", TestInsertStudent)
 	t.Run("List All Students", TestAllStudents)
@@ -16,6 +21,14 @@ var TestStudentTable = func(t *testing.T) {
 	t.Run("Update student2 isConfirmed", TestUpdateIsConfirmedInStudentsTable(1, true))
 	t.Run("List All Students", TestAllStudents)
 	t.Run("Get student info", TestGetStudent(1))
+}
+
+var PanicTestAllStudent = func(t *testing.T) {
+	expectError("AllStudents", t, func() {
+		if _, err := db.AllStudents(); err != nil {
+			panic(err)
+		}
+	})
 }
 
 var TestCreateStudentTable = func(t *testing.T) {
@@ -30,6 +43,13 @@ var TestInsertStudent = func(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+
+	expectError("InsertStudent", t, func() {
+		s := model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false}
+		if err := db.InsertStudent(s); err != nil {
+			panic(err)
+		}
+	})
 }
 
 var TestAllStudents = func(t *testing.T) {
