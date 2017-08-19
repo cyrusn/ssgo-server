@@ -10,20 +10,6 @@ type Subject struct {
 	Capacity int
 }
 
-const subjectTableSchema = `
-CREATE TABLE IF NOT EXISTS subject (
-  code TEXT NOT NULL,
-  gp INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  cname TEXT NOT NULL,
-  capacity INTEGER NOT NULL
-);`
-
-// CreateSubjectTable create subject table
-func (db *DB) CreateSubjectTable() error {
-	return db.createTable(subjectTableSchema)
-}
-
 // InsertSubject insert subject subject information to subject database
 func (db *DB) InsertSubject(s Subject) error {
 	_, err := db.Exec(`

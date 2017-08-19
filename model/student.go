@@ -12,17 +12,8 @@ type Student struct {
 	ClassNo     int
 	Priority    []int
 	IsConfirmed bool
+	Rank        int
 }
-
-const studentTableSchema = `
-CREATE TABLE IF NOT EXISTS students (
-	username TEXT UNIQUE NOT NULL,
-	classcode TEXT NOT NULL,
-	classno INTEGER NOT NULL,
-	priority BLOB,
-	is_confirmed INTEGER,
-	FOREIGN KEY(username) REFERENCES user(username)
-);`
 
 func convertBool2Int(b bool) int {
 	if b {
@@ -36,11 +27,6 @@ func convertInt2Bool(i int) bool {
 		return false
 	}
 	return true
-}
-
-// CreateStudentTable create student table
-func (db *DB) CreateStudentTable() error {
-	return db.createTable(studentTableSchema)
 }
 
 // InsertStudent add new student to database
@@ -57,13 +43,15 @@ func (db *DB) InsertStudent(s Student) error {
 			classcode,
 			classno,
 			priority,
-			is_confirmed
-		) values (?, ?, ?, ?, ?)`,
+			is_confirmed,
+			rank
+		) values (?, ?, ?, ?, ?, ?)`,
 		s.Username,
 		s.ClassCode,
 		s.ClassNo,
 		priority,
 		convertBool2Int(s.IsConfirmed),
+		s.Rank,
 	)
 
 	if err != nil {
@@ -135,6 +123,7 @@ func scanStudent(v interface{}) (*Student, error) {
 		&s.ClassNo,
 		&priority,
 		&isConfirmed,
+		&s.Rank,
 	}
 
 	switch t := v.(type) {

@@ -16,17 +16,17 @@ var userList = []model.User{
 }
 
 var TestUserTable = func(t *testing.T) {
-	t.Run("Create user table", TestCreateUserTable)
+	// t.Run("Create user table", TestCreateUserTable)
 	t.Run("Add users", TestInsertUser)
 	t.Run("List All user", TestAllUsers)
 	t.Run("Get user info", TestGetUser(1))
 }
 
-var TestCreateUserTable = func(t *testing.T) {
-	if err := db.CreateUserTable(); err != nil {
-		t.Fatal(err)
-	}
-}
+// var TestCreateUserTable = func(t *testing.T) {
+// 	if err := db.CreateUserTable(); err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
 var TestInsertUser = func(t *testing.T) {
 	for _, u := range userList {

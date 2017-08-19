@@ -20,12 +20,12 @@ func init() {
 }
 
 func Test(t *testing.T) {
-	t.Run("[Panic Test] CreateTable", PanicTestCreateTable)
+	t.Run("[Panic Test] CreateTables", PanicTestCreateTables)
 	t.Run("[Panic Test] InitDB", PanicTestInitDB)
 	t.Run("InitDB", TestInitDB(DBPath))
+	t.Run("CreateTables", TestCreateTable)
 	t.Run("User", TestUserTable)
 	t.Run("Student", TestStudentTable)
-	t.Run("Rank", TestRankTable)
 	t.Run("Subject", TestSubjectTable)
 }
 
@@ -35,30 +35,6 @@ var PanicTestInitDB = func(t *testing.T) {
 			panic(err)
 		}
 	})
-}
-
-var PanicTestCreateTable = func(t *testing.T) {
-	type testTable struct {
-		name   string
-		method func() error
-	}
-
-	var testTables = []testTable{
-		testTable{"CreateRankTable", db.CreateRankTable},
-		testTable{"CreateStudentTable", db.CreateStudentTable},
-		testTable{"CreateSubjectTable", db.CreateSubjectTable},
-		testTable{"CreateUserTable", db.CreateUserTable},
-	}
-
-	for _, table := range testTables {
-		expectError(table.name, t, func() {
-			err := table.method()
-			if err != nil {
-				panic(err)
-			}
-		})
-	}
-
 }
 
 var TestInitDB = func(DBPath string) func(*testing.T) {

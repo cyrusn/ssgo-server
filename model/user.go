@@ -9,20 +9,6 @@ type User struct {
 	IsTeacher bool
 }
 
-const userTableSchema = `
-CREATE TABLE IF NOT EXISTS user (
-	username TEXT PRIMARY KEY,
-  password TEXT NOT NULL,
-  name TEXT NOT NULL,
-  cname TEXT,
-  is_teacher INTEGER NOT NULL
-);`
-
-// CreateUserTable create student table
-func (db *DB) CreateUserTable() error {
-	return db.createTable(userTableSchema)
-}
-
 // InsertUser insert a new user to user table
 func (db *DB) InsertUser(u User) error {
 	_, err := db.Exec(`

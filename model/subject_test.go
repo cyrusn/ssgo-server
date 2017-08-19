@@ -14,7 +14,7 @@ var subjectList = []model.Subject{
 }
 
 var TestSubjectTable = func(t *testing.T) {
-	t.Run("Create subject table", TestCreateSubjectTable)
+	// t.Run("Create subject table", TestCreateSubjectTable)
 	t.Run("Insert Subject List", TestInsertSubject)
 	t.Run("Get All Subject", TestAllSubjects)
 	t.Run("Get Subject by subject code (bio)", TestGetSubject(0))
@@ -32,11 +32,11 @@ var TestUpdateSubjectCapacity = func(index, capacity int) func(*testing.T) {
 	}
 }
 
-var TestCreateSubjectTable = func(t *testing.T) {
-	if err := db.CreateSubjectTable(); err != nil {
-		t.Fatal(err)
-	}
-}
+// var TestCreateSubjectTable = func(t *testing.T) {
+// 	if err := db.CreateSubjectTable(); err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
 var TestInsertSubject = func(t *testing.T) {
 	for _, s := range subjectList {

@@ -7,14 +7,14 @@ import (
 )
 
 var studentList = []model.Student{
-	model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false},
-	model.Student{"student2", "3A", 2, []int{3, 2, 1, 0}, false},
-	model.Student{"student3", "3A", 3, []int{}, true},
+	model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false, -1},
+	model.Student{"student2", "3A", 2, []int{3, 2, 1, 0}, false, -1},
+	model.Student{"student3", "3A", 3, []int{}, true, -1},
 }
 
 var TestStudentTable = func(t *testing.T) {
-	t.Run("Panic Test All Students", PanicTestAllStudent)
-	t.Run("Create student table", TestCreateStudentTable)
+	// t.Run("[Panic] All Students", PanicTestAllStudent)
+	// t.Run("Create student table", TestCreateStudentTable)
 	t.Run("Add Students", TestInsertStudent)
 	t.Run("List All Students", TestAllStudents)
 	t.Run("Update student1 priority", TestUpdatePriorityInStudentsTable(0, []int{1, 2, 3, 0}))
@@ -31,11 +31,11 @@ var PanicTestAllStudent = func(t *testing.T) {
 	})
 }
 
-var TestCreateStudentTable = func(t *testing.T) {
-	if err := db.CreateStudentTable(); err != nil {
-		t.Fatal(err)
-	}
-}
+// var TestCreateStudentTable = func(t *testing.T) {
+// 	if err := db.CreateStudentTable(); err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
 var TestInsertStudent = func(t *testing.T) {
 	for _, sts := range studentList {
@@ -45,7 +45,7 @@ var TestInsertStudent = func(t *testing.T) {
 	}
 
 	expectError("InsertStudent", t, func() {
-		s := model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false}
+		s := model.Student{"student1", "3A", 1, []int{0, 1, 2, 3}, false, 2}
 		if err := db.InsertStudent(s); err != nil {
 			panic(err)
 		}

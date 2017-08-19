@@ -21,12 +21,3 @@ func InitDB(dbPath string) (*DB, error) {
 	}
 	return &DB{db}, nil
 }
-
-// createTable create table by given schema
-func (db *DB) createTable(schema string) error {
-	_, err := db.Exec(schema)
-	if err != nil {
-		return err
-	}
-	return nil
-}
