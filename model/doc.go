@@ -13,7 +13,7 @@ USER store the information for all users in `ssgo`, including Student, Teacher a
 
 STUDENT Table
 
-store further information for student user
+STUDENT Table store further information for student user
 
   - username string
   - classCode string
@@ -23,7 +23,7 @@ store further information for student user
 
 SUBJECT Table
 
-store the capacity (number of student can be enrolled to this subject)
+SUBJECT Table store the capacity (number of student can be enrolled to this subject)
 for each subject on each Submission
 
   - code string
