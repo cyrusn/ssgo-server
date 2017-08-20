@@ -32,12 +32,6 @@ var TestUpdateSubjectCapacity = func(index, capacity int) func(*testing.T) {
 	}
 }
 
-// var TestCreateSubjectTable = func(t *testing.T) {
-// 	if err := db.CreateSubjectTable(); err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
-
 var TestInsertSubject = func(t *testing.T) {
 	for _, s := range subjectList {
 		if err := db.InsertSubject(s); err != nil {

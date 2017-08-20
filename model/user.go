@@ -1,5 +1,7 @@
 package model
 
+import "golang.org/x/crypto/bcrypt"
+
 // User store basic information of teacher or student user
 type User struct {
 	Username  string
@@ -9,15 +11,27 @@ type User struct {
 	IsTeacher bool
 }
 
+// Validate validate the password of the user
+func (u User) Validate(password string) error {
+	bHash := []byte(u.Password)
+	bPassword := []byte(password)
+	return bcrypt.CompareHashAndPassword(bHash, bPassword)
+}
+
 // InsertUser insert a new user to user table
 func (db *DB) InsertUser(u User) error {
-	_, err := db.Exec(`
+	password := []byte(u.Password)
+	hash, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(`
     INSERT INTO user (
       username, password, name, cname, is_teacher
     ) values (
       ?, ?, ?, ?, ?
     )`,
-		u.Username, u.Password, u.Name, u.Cname, convertBool2Int(u.IsTeacher),
+		u.Username, hash, u.Name, u.Cname, convertBool2Int(u.IsTeacher),
 	)
 	return err
 }

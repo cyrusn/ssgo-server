@@ -6,15 +6,9 @@ type schema struct {
 }
 
 var schemas = []schema{
-	schema{
-		"USER", userTableSchema,
-	},
-	schema{
-		"STUDENT", studentTableSchema,
-	},
-	schema{
-		"SUBJECT", subjectTableSchema,
-	},
+	schema{"USER", userTableSchema},
+	schema{"STUDENT", studentTableSchema},
+	schema{"SUBJECT", subjectTableSchema},
 }
 
 const userTableSchema = `
@@ -33,7 +27,7 @@ CREATE TABLE IF NOT EXISTS students (
 	classno INTEGER NOT NULL,
 	priority BLOB,
 	is_confirmed INTEGER,
-	rank INTEGER,
+	rank INTEGER DEFAULT -1,
 	FOREIGN KEY(username) REFERENCES user(username)
 );`
 

@@ -13,8 +13,6 @@ var studentList = []model.Student{
 }
 
 var TestStudentTable = func(t *testing.T) {
-	// t.Run("[Panic] All Students", PanicTestAllStudent)
-	// t.Run("Create student table", TestCreateStudentTable)
 	t.Run("Add Students", TestInsertStudent)
 	t.Run("List All Students", TestAllStudents)
 	t.Run("Update student1 priority", TestUpdatePriorityInStudentsTable(0, []int{1, 2, 3, 0}))
@@ -30,12 +28,6 @@ var PanicTestAllStudent = func(t *testing.T) {
 		}
 	})
 }
-
-// var TestCreateStudentTable = func(t *testing.T) {
-// 	if err := db.CreateStudentTable(); err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
 
 var TestInsertStudent = func(t *testing.T) {
 	for _, sts := range studentList {
@@ -96,5 +88,4 @@ var TestGetStudent = func(index int) func(*testing.T) {
 		want := &studentList[index]
 		diffTest(want, got, t)
 	}
-
 }

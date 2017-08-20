@@ -20,8 +20,8 @@ func init() {
 }
 
 func Test(t *testing.T) {
-	t.Run("[Panic Test] CreateTables", PanicTestCreateTables)
-	t.Run("[Panic Test] InitDB", PanicTestInitDB)
+	t.Run("[Panic] CreateTables", PanicTestCreateTables)
+	t.Run("[Panic] InitDB", PanicTestInitDB)
 	t.Run("InitDB", TestInitDB(DBPath))
 	t.Run("CreateTables", TestCreateTable)
 	t.Run("User", TestUserTable)
@@ -30,7 +30,7 @@ func Test(t *testing.T) {
 }
 
 var PanicTestInitDB = func(t *testing.T) {
-	expectError("InitDB", t, func() {
+	expectError(`InitDB with an invalid path e.g. "./"`, t, func() {
 		if _, err := model.InitDB("./"); err != nil {
 			panic(err)
 		}
@@ -53,7 +53,7 @@ func expectError(name string, t *testing.T, f func()) {
 		if err == nil {
 			t.Fatalf("Error Test: [%s] did not return error", name)
 		}
-		t.Logf("Error Test: Success! [%s], %s", name, err)
+		t.Logf("Error Test:Success! [%s]\n%s", name, err)
 	}(t)
 	f()
 }

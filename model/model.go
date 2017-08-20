@@ -16,6 +16,7 @@ func InitDB(dbPath string) (*DB, error) {
 		return nil, err
 	}
 
+	// Ping also establish a connection if necessary
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}

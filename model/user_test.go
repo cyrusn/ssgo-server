@@ -1,7 +1,10 @@
 package model_test
 
 import (
+	"fmt"
 	"testing"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/cyrusn/ssgo/model"
 )
@@ -16,17 +19,11 @@ var userList = []model.User{
 }
 
 var TestUserTable = func(t *testing.T) {
-	// t.Run("Create user table", TestCreateUserTable)
 	t.Run("Add users", TestInsertUser)
 	t.Run("List All user", TestAllUsers)
 	t.Run("Get user info", TestGetUser(1))
+	t.Run("Validate user password", TestUser_Validate(1))
 }
-
-// var TestCreateUserTable = func(t *testing.T) {
-// 	if err := db.CreateUserTable(); err != nil {
-// 		t.Fatal(err)
-// 	}
-// }
 
 var TestInsertUser = func(t *testing.T) {
 	for _, u := range userList {
@@ -43,8 +40,7 @@ var TestAllUsers = func(t *testing.T) {
 	}
 
 	for i, got := range users {
-		want := &userList[i]
-		diffTest(want, got, t)
+		diffUserTest(got, &userList[i], t)
 	}
 }
 
@@ -53,9 +49,35 @@ var TestGetUser = func(index int) func(*testing.T) {
 		username := userList[index].Username
 		got, err := db.GetUser(username)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
-		want := &userList[index]
-		diffTest(want, got, t)
+		diffUserTest(got, &userList[index], t)
 	}
+}
+
+var TestUser_Validate = func(index int) func(*testing.T) {
+	return func(t *testing.T) {
+		user := userList[index]
+		got, err := db.GetUser(user.Username)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := got.Validate(user.Password); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func diffUserTest(got, want *model.User, t *testing.T) {
+	hash := []byte(got.Password)
+	password := []byte(want.Password)
+	err := bcrypt.CompareHashAndPassword(hash, password)
+	if err != nil {
+		fmt.Println(got, want)
+		t.Fatal(err)
+	}
+
+	got.Password = want.Password
+	diffTest(want, got, t)
 }
