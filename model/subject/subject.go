@@ -1,7 +1,9 @@
 package subject
 
-// Subject store subject's information, where subject.Capacity is the capacity
-// for subject allocation (Quota that student can enrol to this subject.)
+import "github.com/cyrusn/ssgo/model/ssdb"
+
+// Subject store subject's information. The capacity of subject is the
+// quota that student can be enrolled in.
 type Subject struct {
 	Code     string
 	Group    int
@@ -10,8 +12,8 @@ type Subject struct {
 	Capacity int
 }
 
-// InsertSubject insert subject subject information to subject database
-func (db *DB) InsertSubject(s Subject) error {
+// Insert insert subject information to database
+func Insert(db *ssdb.DB, s Subject) error {
 	_, err := db.Exec(`
     INSERT INTO subject (
       code, gp, name, cname, capacity
@@ -23,8 +25,8 @@ func (db *DB) InsertSubject(s Subject) error {
 	return err
 }
 
-// GetSubject return Subject by subject code
-func (db *DB) GetSubject(subjectCode string) (*Subject, error) {
+// Get return Subject by subject code
+func Get(db *ssdb.DB, subjectCode string) (*Subject, error) {
 	row := db.QueryRow(
 		"SELECT * FROM subject where code = ?",
 		subjectCode,
@@ -37,8 +39,8 @@ func (db *DB) GetSubject(subjectCode string) (*Subject, error) {
 	return s, nil
 }
 
-// AllSubjects return Subject by subject code
-func (db *DB) AllSubjects() ([]*Subject, error) {
+// All return all subjects
+func All(db *ssdb.DB) ([]*Subject, error) {
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {
 		return nil, err
@@ -59,8 +61,8 @@ func (db *DB) AllSubjects() ([]*Subject, error) {
 	return subjects, nil
 }
 
-// UpdateSubjectCapacity update subject Capacity by subject Code
-func (db *DB) UpdateSubjectCapacity(subjectCode string, capacity int) error {
+// UpdateCapacity update subject Capacity by subject Code
+func UpdateCapacity(db *ssdb.DB, subjectCode string, capacity int) error {
 	_, err := db.Exec(`
 		UPDATE subject set
 			capacity = ?

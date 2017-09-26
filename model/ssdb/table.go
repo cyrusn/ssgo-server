@@ -1,4 +1,4 @@
-package model
+package ssdb
 
 type schema struct {
 	name    string
@@ -12,15 +12,15 @@ var schemas = []schema{
 }
 
 const teacherTableSchema = `
-CREATE TABLE IF NOT EXISTS user (
+CREATE TABLE IF NOT EXISTS teacher (
   username TEXT PRIMARY KEY,
   password TEXT NOT NULL,
   name TEXT NOT NULL,
   cname TEXT
-  );`
+);`
 
 const studentTableSchema = `
-CREATE TABLE IF NOT EXISTS students (
+CREATE TABLE IF NOT EXISTS student (
   username TEXT PRIMARY KEY,
   password TEXT NOT NULL,
   name TEXT NOT NULL,

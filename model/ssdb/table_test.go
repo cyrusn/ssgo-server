@@ -1,4 +1,4 @@
-package model_test
+package ssdb_test
 
 import "testing"
 

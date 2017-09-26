@@ -1,7 +1,8 @@
-package model
+package ssdb
 
 import (
 	"database/sql"
+	"log"
 	"os"
 )
 
@@ -24,10 +25,12 @@ func InitDB(dbPath string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-// RemoveDB ...
-func RemoveDB(DBPath string) {
+// Cleanup remove DB if it is exist and create a new empty database
+func Cleanup(DBPath string) {
 	if _, err := os.Stat(DBPath); os.IsExist(err) {
-		os.Remove(DBPath)
+		if err := os.Remove(DBPath); err != nil {
+			log.Fatal(err)
+		}
 	}
 	os.Create(DBPath)
 }

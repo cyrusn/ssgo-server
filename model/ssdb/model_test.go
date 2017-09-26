@@ -1,4 +1,4 @@
-package model_test
+package ssdb_test
 
 import (
 	"testing"
@@ -22,7 +22,6 @@ func Test(t *testing.T) {
 	t.Run("[Panic] InitDB", PanicTestInitDB)
 	t.Run("InitDB", TestInitDB(DBPath))
 	t.Run("CreateTables", TestCreateTable)
-	// t.Run("User", TestUserTable)
 }
 
 var PanicTestInitDB = func(t *testing.T) {

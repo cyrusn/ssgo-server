@@ -1,21 +1,23 @@
 /*
 Package model provide an interface to manage the table in database for ssgo
 
-USER Table
+TEACHER Table
 
-USER store the information for all users in `ssgo`, including Student, Teacher and Admin
+TEACHER store the information for all users in `ssgo`, including Student, Teacher and Admin
 
   - username strign
   - password string (encrypted string)
-  - ename string
+  - name string
   - cname string
-  - isTeacher bool
 
 STUDENT Table
 
 STUDENT Table store further information for student user
 
-  - username string
+  - username strign
+  - password string (encrypted string)
+  - name string
+  - cname string
   - classCode string
   - classNo int
   - priority []int (BLOB in sqlite3)
