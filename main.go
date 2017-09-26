@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"./model"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
