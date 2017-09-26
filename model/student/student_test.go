@@ -20,7 +20,9 @@ var db *model.DB
 
 func init() {
 	model.RemoveDB(DBPath)
-	db, err := model.InitDB(DBPath)
+	var err error
+
+	db, err = model.InitDB(DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,7 +36,7 @@ var studentList = []student.Student{
 }
 
 func Test(t *testing.T) {
-	t.Run("Add Students", TestInsertStudent)
+	t.Run("Insert Students", TestInsertStudents)
 	t.Run("List All Students", TestAllStudents)
 	t.Run("Update student1 priority", TestUpdatePriorityInStudentsTable(0, []int{1, 2, 3, 0}))
 	t.Run("Update student2 isConfirmed", TestUpdateIsConfirmedInStudentsTable(1, true))
@@ -44,15 +46,15 @@ func Test(t *testing.T) {
 
 var PanicTestAllStudent = func(t *testing.T) {
 	helper.ExpectError("AllStudents", t, func() {
-		if _, err := student.AllStudents(db); err != nil {
+		if _, err := student.All(db); err != nil {
 			panic(err)
 		}
 	})
 }
 
-var TestInsertStudent = func(t *testing.T) {
+var TestInsertStudents = func(t *testing.T) {
 	for _, sts := range studentList {
-		if err := student.InsertStudent(db, sts); err != nil {
+		if err := student.Insert(db, sts); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -64,14 +66,14 @@ var TestInsertStudent = func(t *testing.T) {
 			"Alice Li",
 			"李愛麗",
 		}, "3A", 1, []int{0, 1, 2, 3}, false, 2}
-		if err := student.InsertStudent(db, s); err != nil {
+		if err := student.Insert(db, s); err != nil {
 			panic(err)
 		}
 	})
 }
 
 var TestAllStudents = func(t *testing.T) {
-	students, err := student.AllStudents(db)
+	students, err := student.All(db)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +87,7 @@ var TestAllStudents = func(t *testing.T) {
 var TestUpdateIsConfirmedInStudentsTable = func(index int, newValue bool) func(*testing.T) {
 	return func(t *testing.T) {
 		username := studentList[index].Username
-		if err := student.UpdateIsConfirmedInStudentsTable(db, username, newValue); err != nil {
+		if err := student.UpdateIsConfirmed(db, username, newValue); err != nil {
 			t.Fatal(err)
 		}
 		studentList[index].IsConfirmed = newValue
@@ -95,7 +97,7 @@ var TestUpdateIsConfirmedInStudentsTable = func(index int, newValue bool) func(*
 var TestUpdatePriorityInStudentsTable = func(index int, newPriority []int) func(*testing.T) {
 	return func(t *testing.T) {
 		username := studentList[index].Username
-		err := student.UpdatePriorityInStudentsTable(db, username, newPriority)
+		err := student.UpdatePriority(db, username, newPriority)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -106,7 +108,7 @@ var TestUpdatePriorityInStudentsTable = func(index int, newPriority []int) func(
 var TestGetStudent = func(index int) func(*testing.T) {
 	return func(t *testing.T) {
 		username := studentList[index].Username
-		got, err := student.GetStudent(db, username)
+		got, err := student.Get(db, username)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -34,8 +34,8 @@ func convertInt2Bool(i int) bool {
 	return true
 }
 
-// InsertStudent add new student to database
-func InsertStudent(db *model.DB, s Student) error {
+// Insert add new student to database
+func Insert(db *model.DB, s Student) error {
 
 	priority, err := json.Marshal(s.Priority)
 	if err != nil {
@@ -77,8 +77,8 @@ func InsertStudent(db *model.DB, s Student) error {
 	return nil
 }
 
-// UpdatePriorityInStudentsTable will update student's priority
-func UpdatePriorityInStudentsTable(db *model.DB, username string, p []int) error {
+// UpdatePriority will update student's priority
+func UpdatePriority(db *model.DB, username string, p []int) error {
 	priority, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -90,24 +90,24 @@ func UpdatePriorityInStudentsTable(db *model.DB, username string, p []int) error
 	return err
 }
 
-// UpdateIsConfirmedInStudentsTable will update student's isConfirmed
-func UpdateIsConfirmedInStudentsTable(db *model.DB, username string, b bool) error {
+// UpdateIsConfirmed will update student's isConfirmed
+func UpdateIsConfirmed(db *model.DB, username string, b bool) error {
 	statement := "UPDATE students set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
 	return err
 }
 
-// GetStudent query student by username
-func GetStudent(db *model.DB, username string) (*Student, error) {
+// Get query student by username
+func Get(db *model.DB, username string) (*Student, error) {
 	statement := "SELECT * FROM students where username = ?"
 
 	row := db.QueryRow(statement, username)
 	return scanStudent(row)
 }
 
-// AllStudents queries all students
-func AllStudents(db *model.DB) ([]*Student, error) {
+// All queries all students
+func All(db *model.DB) ([]*Student, error) {
 	rows, err := db.Query("SELECT * FROM students")
 	if err != nil {
 		return nil, err
