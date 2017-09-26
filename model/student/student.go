@@ -1,13 +1,18 @@
-package model
+package student
 
 import (
 	"database/sql"
 	"encoding/json"
+
+	"github.com/cyrusn/ssgo/model"
+	"github.com/cyrusn/ssgo/model/user"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Student stores information for users including studnt, teacher and admin
 type Student struct {
-	Username    string
+	user.UserInfo
 	ClassCode   string
 	ClassNo     int
 	Priority    []int
@@ -30,9 +35,15 @@ func convertInt2Bool(i int) bool {
 }
 
 // InsertStudent add new student to database
-func (db *DB) InsertStudent(s Student) error {
+func InsertStudent(db *model.DB, s Student) error {
 
 	priority, err := json.Marshal(s.Priority)
+	if err != nil {
+		return err
+	}
+
+	password := []byte(s.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
@@ -40,13 +51,19 @@ func (db *DB) InsertStudent(s Student) error {
 	_, err = db.Exec(
 		`INSERT INTO students (
 			username,
+			password,
+			name,
+			cname,
 			classcode,
 			classno,
 			priority,
 			is_confirmed,
 			rank
-		) values (?, ?, ?, ?, ?, ?)`,
+		) values (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		s.Username,
+		hashedPassword,
+		s.Name,
+		s.Cname,
 		s.ClassCode,
 		s.ClassNo,
 		priority,
@@ -61,7 +78,7 @@ func (db *DB) InsertStudent(s Student) error {
 }
 
 // UpdatePriorityInStudentsTable will update student's priority
-func (db *DB) UpdatePriorityInStudentsTable(username string, p []int) error {
+func UpdatePriorityInStudentsTable(db *model.DB, username string, p []int) error {
 	priority, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -74,7 +91,7 @@ func (db *DB) UpdatePriorityInStudentsTable(username string, p []int) error {
 }
 
 // UpdateIsConfirmedInStudentsTable will update student's isConfirmed
-func (db *DB) UpdateIsConfirmedInStudentsTable(username string, b bool) error {
+func UpdateIsConfirmedInStudentsTable(db *model.DB, username string, b bool) error {
 	statement := "UPDATE students set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
@@ -82,7 +99,7 @@ func (db *DB) UpdateIsConfirmedInStudentsTable(username string, b bool) error {
 }
 
 // GetStudent query student by username
-func (db *DB) GetStudent(username string) (*Student, error) {
+func GetStudent(db *model.DB, username string) (*Student, error) {
 	statement := "SELECT * FROM students where username = ?"
 
 	row := db.QueryRow(statement, username)
@@ -90,7 +107,7 @@ func (db *DB) GetStudent(username string) (*Student, error) {
 }
 
 // AllStudents queries all students
-func (db *DB) AllStudents() ([]*Student, error) {
+func AllStudents(db *model.DB) ([]*Student, error) {
 	rows, err := db.Query("SELECT * FROM students")
 	if err != nil {
 		return nil, err
@@ -118,7 +135,10 @@ func scanStudent(v interface{}) (*Student, error) {
 	var err error
 
 	var args = []interface{}{
-		&s.Username,
+		&s.UserInfo.Username,
+		&s.UserInfo.Password,
+		&s.UserInfo.Name,
+		&s.UserInfo.Cname,
 		&s.ClassCode,
 		&s.ClassNo,
 		&priority,

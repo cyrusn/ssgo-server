@@ -1,4 +1,4 @@
-package model
+package subject
 
 // Subject store subject's information, where subject.Capacity is the capacity
 // for subject allocation (Quota that student can enrol to this subject.)

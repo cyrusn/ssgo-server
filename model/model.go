@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"os"
 )
 
 // DB is custom database for model
@@ -21,4 +22,12 @@ func InitDB(dbPath string) (*DB, error) {
 		return nil, err
 	}
 	return &DB{db}, nil
+}
+
+// RemoveDB ...
+func RemoveDB(DBPath string) {
+	if _, err := os.Stat(DBPath); os.IsExist(err) {
+		os.Remove(DBPath)
+	}
+	os.Create(DBPath)
 }
