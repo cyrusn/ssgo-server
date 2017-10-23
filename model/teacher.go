@@ -1,16 +1,16 @@
-package teacher
+package model
 
 import (
-	"github.com/cyrusn/ssgo/model/ssdb"
-	"github.com/cyrusn/ssgo/model/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Teacher store information of teacher user
-type Teacher user.Info
+type Teacher struct {
+	user.Info
+}
 
 // Insert insert teacher user in database
-func Insert(db *ssdb.DB, t Teacher) error {
+func (t *Teacher) Insert() error {
 
 	password := []byte(t.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.MinCost)
@@ -38,10 +38,9 @@ func Insert(db *ssdb.DB, t Teacher) error {
 }
 
 // Get get teacher information from database
-func Get(db *ssdb.DB, username string) (*Teacher, error) {
+func (t *Teacher) Get() error {
 	statement := "SELECT * FROM teacher where username = ?"
-
-	var teacher = new(Teacher)
+	username := t.Username
 	if err := db.QueryRow(statement, username).Scan(
 		&teacher.Username,
 		&teacher.Password,

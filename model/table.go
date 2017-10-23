@@ -1,4 +1,4 @@
-package ssdb
+package model
 
 type schema struct {
 	name    string
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS subject (
 );`
 
 // CreateTables create all tables for ssgo system in database
-func (db *DB) CreateTables() error {
+func CreateTables() error {
 	for _, s := range schemas {
 		err := db.createTable(s.content)
 		if err != nil {
@@ -53,7 +53,7 @@ func (db *DB) CreateTables() error {
 }
 
 // createTable create table by given schema
-func (db *DB) createTable(schema string) error {
+func createTable(schema string) error {
 	_, err := db.Exec(schema)
 	if err != nil {
 		return err

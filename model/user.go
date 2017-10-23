@@ -1,4 +1,4 @@
-package user
+package model
 
 // Info store common information of both teacher or student user
 type Info struct {

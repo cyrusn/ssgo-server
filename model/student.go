@@ -1,11 +1,8 @@
-package student
+package model
 
 import (
 	"database/sql"
 	"encoding/json"
-
-	"github.com/cyrusn/ssgo/model/ssdb"
-	"github.com/cyrusn/ssgo/model/user"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -35,7 +32,7 @@ func convertInt2Bool(i int) bool {
 }
 
 // Insert add new student to database.
-func Insert(db *ssdb.DB, s Student) error {
+func (s *Student) Insert() error {
 
 	priority, err := json.Marshal(s.Priority)
 	if err != nil {
@@ -78,7 +75,8 @@ func Insert(db *ssdb.DB, s Student) error {
 }
 
 // UpdatePriority will update student's priority.
-func UpdatePriority(db *ssdb.DB, username string, p []int) error {
+func (s *Student) UpdatePriority(p []int) error {
+	username := s.Username
 	priority, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -91,7 +89,8 @@ func UpdatePriority(db *ssdb.DB, username string, p []int) error {
 }
 
 // UpdateIsConfirmed will update student's isConfirmed.
-func UpdateIsConfirmed(db *ssdb.DB, username string, b bool) error {
+func (s *Student) UpdateIsConfirmed(b bool) error {
+	username := s.Username
 	statement := "UPDATE student set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
@@ -99,22 +98,22 @@ func UpdateIsConfirmed(db *ssdb.DB, username string, b bool) error {
 }
 
 // Get query student by username.
-func Get(db *ssdb.DB, username string) (*Student, error) {
+func (s *Student) Get() error {
+	username := s.Username
 	statement := "SELECT * FROM student where username = ?"
 
 	row := db.QueryRow(statement, username)
-	return scanStudent(row)
+	return s.scanStudent(row)
 }
 
 // All queries all students.
-func All(db *ssdb.DB) ([]*Student, error) {
+func (students []*Student) All() error {
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
-	var students []*Student
 
 	for rows.Next() {
 		s, err := scanStudent(rows)
@@ -128,8 +127,7 @@ func All(db *ssdb.DB) ([]*Student, error) {
 }
 
 // scanStudent by *sql.Row or *sql.Rows.
-func scanStudent(v interface{}) (*Student, error) {
-	s := new(Student)
+func (s *Student) scanStudent() error {
 	var priority []byte
 	var isConfirmed int
 	var err error
