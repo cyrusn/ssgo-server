@@ -7,9 +7,14 @@ import (
 
 var db *sql.DB
 
+func init() {
+	log.SetFlags(log.Llongfile)
+}
+
 // InitDB startup DB for model package
 func InitDB(dbPath string) {
-	db, err := sql.Open("sqlite3", dbPath)
+	var err error
+	db, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Panic(err)
 	}

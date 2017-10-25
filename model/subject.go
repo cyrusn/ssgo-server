@@ -24,22 +24,22 @@ func (s *Subject) Insert() error {
 }
 
 // Get return Subject by subject code
-func (*Subject) Get() error {
+func (s *Subject) Get() error {
 	subjectCode := s.Code
 	row := db.QueryRow(
 		"SELECT * FROM subject where code = ?",
 		subjectCode,
 	)
-	s := new(Subject)
 	if err := row.Scan(&s.Code, &s.Group, &s.Name, &s.Cname, &s.Capacity); err != nil {
-		return nil, err
+		return err
 	}
 
-	return s, nil
+	return nil
 }
 
-// All return all subjects
-func (subjects []*Subject) All() error {
+// AllSubjects return all subjects
+func AllSubjects() ([]*Subject, error) {
+	var subjects []*Subject
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {
 		return nil, err

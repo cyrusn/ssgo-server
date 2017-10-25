@@ -9,7 +9,7 @@ import (
 
 // Student stores information for student user.
 type Student struct {
-	user.Info
+	Info
 	ClassCode   string
 	ClassNo     int
 	Priority    []int
@@ -107,7 +107,7 @@ func (s *Student) Get() error {
 }
 
 // All queries all students.
-func (students []*Student) All() error {
+func AllStudents() ([]*Student, error) {
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {
 		return nil, err
@@ -115,8 +115,11 @@ func (students []*Student) All() error {
 
 	defer rows.Close()
 
+	var students []*Student
+
 	for rows.Next() {
-		s, err := scanStudent(rows)
+		s := new(Student)
+		err := s.scanStudent(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -127,7 +130,7 @@ func (students []*Student) All() error {
 }
 
 // scanStudent by *sql.Row or *sql.Rows.
-func (s *Student) scanStudent() error {
+func (s *Student) scanStudent(v interface{}) error {
 	var priority []byte
 	var isConfirmed int
 	var err error
@@ -152,14 +155,14 @@ func (s *Student) scanStudent() error {
 	}
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := json.Unmarshal(priority, &s.Priority); err != nil {
-		return nil, err
+		return err
 	}
 
 	s.IsConfirmed = convertInt2Bool(isConfirmed)
 
-	return s, nil
+	return nil
 }

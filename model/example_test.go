@@ -9,21 +9,14 @@ import (
 
 func ExampleInitDB() {
 	path := "./testing.db"
-	db, err := model.InitDB(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
+	model.InitDB(path)
 }
 
 func ExampleInsert() {
 	model.InitDB("./testing.db")
 
 	u := model.Student{
-		user.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"},
+		model.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"},
 		"3A", 1, []int{0, 1, 2, 3}, false, -1,
 	}
 
@@ -34,15 +27,14 @@ func ExampleInsert() {
 }
 
 func ExampleGet() {
-	db, err := ssdb.InitDB("./testing.db")
+	model.InitDB("./testing.db")
+
+	student := new(model.Student)
+	student.Info.Username = "student1"
+	err := student.Get()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	u, err := student.Get(db, "student1")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(u.Name)
+	fmt.Println(student.Name)
 }

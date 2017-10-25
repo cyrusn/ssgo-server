@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS subject (
 // CreateTables create all tables for ssgo system in database
 func CreateTables() error {
 	for _, s := range schemas {
-		err := db.createTable(s.content)
+		err := createTable(s.content)
 		if err != nil {
 			return err
 		}

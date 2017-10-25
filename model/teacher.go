@@ -5,9 +5,7 @@ import (
 )
 
 // Teacher store information of teacher user
-type Teacher struct {
-	user.Info
-}
+type Teacher Info
 
 // Insert insert teacher user in database
 func (t *Teacher) Insert() error {
@@ -31,24 +29,17 @@ func (t *Teacher) Insert() error {
 		t.Cname,
 	)
 
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Get get teacher information from database
 func (t *Teacher) Get() error {
 	statement := "SELECT * FROM teacher where username = ?"
 	username := t.Username
-	if err := db.QueryRow(statement, username).Scan(
-		&teacher.Username,
-		&teacher.Password,
-		&teacher.Name,
-		&teacher.Cname,
-	); err != nil {
-		return nil, err
-	}
-
-	return teacher, nil
+	return db.QueryRow(statement, username).Scan(
+		&t.Username,
+		&t.Password,
+		&t.Name,
+		&t.Cname,
+	)
 }

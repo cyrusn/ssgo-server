@@ -1,55 +1,62 @@
 package model_test
 
 import (
+	"fmt"
 	"testing"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/cyrusn/ssgo/model"
 )
 
-var subjectList = []subject.Subject{
+var subjectList = []model.Subject{
 	model.Subject{"bio", 1, "Biology", "生物", 0},
 	model.Subject{"bafs", 1, "Business, Accounting and Financial Studies", "企業、會計與財務概論", 0},
 	model.Subject{"ict", 2, "Information and Communication Technology", "資訊及通訊科技", 0},
 	model.Subject{"econ", 2, "Economics", "經濟", 0},
 }
 
-var TestUpdateCapacity = func(index, capacity int) func(*testing.T) {
-	return func(t *testing.T) {
-		code := subjectList[index].Code
-		if err := subject.UpdateCapacity(db, code, capacity); err != nil {
-			t.Fatal(err)
+func TestSubjectPackage(t *testing.T) {
+	for i, s := range subjectList {
+		name := fmt.Sprintf("Insert Subject %d", i)
+		t.Run(name, func(t *testing.T) {
+			if err := s.Insert(); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+
+	t.Run("Update Capacity", func(t *testing.T) {
+		for i, subject := range subjectList {
+			capacity := 20
+			if err := subject.UpdateCapacity(capacity); err != nil {
+				t.Fatal(err)
+			}
+			subjectList[i].Capacity = capacity
 		}
-		subjectList[index].Capacity = capacity
-	}
-}
+	})
 
-var TestInsert = func(t *testing.T) {
-	for _, s := range subjectList {
-		if err := subject.Insert(db, s); err != nil {
-			t.Fatal(err)
-		}
-	}
-}
-
-var TestAll = func(t *testing.T) {
-	subjects, err := subject.All(db)
-	if err != nil {
-		t.Fatal(err)
+	for i, subject := range subjectList {
+		name := fmt.Sprintf("Get Each Subjects %d", i)
+		t.Run(name, func(t *testing.T) {
+			want := subject
+			s := new(model.Subject)
+			s.Code = want.Code
+			if err := s.Get(); err != nil {
+				t.Fatal(err)
+			}
+			diffTest(&want, s, t)
+		})
 	}
 
-	for i, got := range subjects {
-		want := &subjectList[i]
-		helper.DiffTest(want, got, t)
-	}
-}
-
-var TestGet = func(index int) func(*testing.T) {
-	return func(t *testing.T) {
-		want := subjectList[index]
-		got, err := subject.Get(db, want.Code)
+	t.Run("Get All Subjects", func(t *testing.T) {
+		subjects, err := model.AllSubjects()
 		if err != nil {
 			t.Fatal(err)
 		}
-		helper.DiffTest(&want, got, t)
-	}
+
+		for i, got := range subjects {
+			want := &subjectList[i]
+			diffTest(want, got, t)
+		}
+	})
+
 }

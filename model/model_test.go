@@ -7,29 +7,34 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var PanicTestInitDB = func(t *testing.T) {
-	expectError(`InitDB with an invalid path e.g. "./"`, t, func() {
-		model.InitDB("./")
+func TestModel(t *testing.T) {
+	t.Run("[Error] Init DB with invalid path", func(t *testing.T) {
+		expectError(`InitDB with an invalid path e.g. "./"`, t, func() {
+			model.InitDB("./")
+		})
 	})
-}
 
-var PanicTestCreateTables = func(t *testing.T) {
-	expectError("CreateTables before DB ready", t, func() {
-		if err := model.CreateTables(); err != nil {
-			panic(err)
+	t.Run("[Error] CreateTables without properly init DB", func(t *testing.T) {
+		expectError("CreateTables before DB ready", t, func() {
+			if err := model.CreateTables(); err != nil {
+				panic(err)
+			}
+		})
+	})
+
+	t.Run("Init DB", func(t *testing.T) {
+		defer func() {
+			if err := recover(); err != nil {
+				t.Fatal(err)
+			}
+		}()
+		model.InitDB(DBPath)
+	})
+
+	t.Run("CreateTables", func(t *testing.T) {
+		err := model.CreateTables()
+		if err != nil {
+			t.Fatal(err)
 		}
 	})
-}
-
-var TestInitDB = func(DBPath string) func(*testing.T) {
-	return func(t *testing.T) {
-		model.InitDB(DBPath)
-	}
-}
-
-var TestCreateTable = func(t *testing.T) {
-	err := model.CreateTables()
-	if err != nil {
-		t.Fatal(err)
-	}
 }
