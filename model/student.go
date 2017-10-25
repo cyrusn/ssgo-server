@@ -106,7 +106,7 @@ func (s *Student) Get() error {
 	return s.scanStudent(row)
 }
 
-// All queries all students.
+// AllStudents queries all students.
 func AllStudents() ([]*Student, error) {
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {

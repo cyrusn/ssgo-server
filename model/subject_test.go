@@ -14,9 +14,9 @@ var subjectList = []model.Subject{
 	model.Subject{"econ", 2, "Economics", "經濟", 0},
 }
 
-func TestSubjectPackage(t *testing.T) {
+func TestSubject(t *testing.T) {
 	for i, s := range subjectList {
-		name := fmt.Sprintf("Insert Subject %d", i)
+		name := fmt.Sprintf("Insert Subject #%d", i+1)
 		t.Run(name, func(t *testing.T) {
 			if err := s.Insert(); err != nil {
 				t.Fatal(err)
@@ -35,7 +35,7 @@ func TestSubjectPackage(t *testing.T) {
 	})
 
 	for i, subject := range subjectList {
-		name := fmt.Sprintf("Get Each Subjects %d", i)
+		name := fmt.Sprintf("Get Each Subjects #%d", i+1)
 		t.Run(name, func(t *testing.T) {
 			want := subject
 			s := new(model.Subject)

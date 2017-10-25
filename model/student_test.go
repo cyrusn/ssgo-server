@@ -1,97 +1,114 @@
 package model_test
 
-// import (
-// 	"github.com/cyrusn/ssgo/model"
-// 	_ "github.com/mattn/go-sqlite3"
-// 	"golang.org/x/crypto/bcrypt"
-// )
+import (
+	"fmt"
+	"testing"
 
-// // create a student list for testing
-// var studentList = []model.Student{
-// 	model.Student{model.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
-// 	model.Student{model.Info{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
-// 	model.Student{model.Info{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
-// }
+	"github.com/cyrusn/ssgo/model"
+	"golang.org/x/crypto/bcrypt"
+)
 
-// func (t *UserTest) TestStudent_Insert() {
-// 	for _, sts := range studentList {
-// 		if err := student.Insert(); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 	}
-// }
+// create a student list for testing
+var studentList = []model.Student{
+	model.Student{model.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
+	model.Student{model.Info{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
+	model.Student{model.Info{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
+}
 
-// // TestInsertError generate error for Insert function, to test the error handling
-// func (t *UserTest) TestStudent_Insert_Errors() {
-// 	expectError("Insert Duplicated student", t, func() {
-// 		s := studentList[0]
-// 		if err := student.Insert(db, s); err != nil {
-// 			panic(err)
-// 		}
-// 	})
-// }
+func TestStudent(t *testing.T) {
+	for i, sts := range studentList {
+		name := fmt.Sprintf("Insert %d", i)
+		t.Run(name, func(t *testing.T) {
+			if err := sts.Insert(); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
 
-// func (t *UserTest) Test_AllStudents() {
-// 	var students []*model.Student
-// 	err := students.All()
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	t.Run("Insert Duplicated student", func(t *testing.T) {
+		expectError("Insert Duplicated student", t, func() {
+			s := studentList[0]
+			if err := s.Insert(); err != nil {
+				panic(err)
+			}
+		})
+	})
 
-// 	for i, got := range students {
-// 		want := &studentList[i]
+	t.Run("AllStudents", func(t *testing.T) {
 
-// 		// reset hashedPassword to un-hashed one for check the diff
-// 		got.Info.Password = want.Info.Password
+		students, err := model.AllStudents()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-// 		diffTest(got, want, t)
-// 	}
-// }
+		for i, got := range students {
+			want := &studentList[i]
 
-// func (t *UserTest) TestStudent_UpdateIsConfirmed() {
-// 	for i := 0; i < 2; i++ {
-// 		username := studentList[index].Username
-// 		var student model.Student
-// 		student.Username = username
-// 		if err := student.UpdateIsConfirmed(true); err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		// update the values in the student list for later checking
-// 		studentList[index].IsConfirmed = newValue
-// 		diffTest(student, want, t)
-// 	}
-// }
+			// reset hashedPassword to un-hashed one for check the diff
+			got.Info.Password = want.Info.Password
+			diffTest(got, want, t)
+		}
+	})
 
-// func (t *UserTest) TestStudent_UpdatePriority() {
-// 	newPriority := []int{1, 2, 3, 0}
-// 	username := studentList[0].Username
-// 	var student = new(model.Student)
-// 	student.Username = username
-// 	err := student.UpdatePriority(newPriority)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	// update the values in the student list for later checking
-// 	studentList[index].Priority = newPriority
-// 	diffTest(student, want, t)
-// }
+	for i, student := range studentList {
+		name := fmt.Sprintf("Update Is Confirmed #%d", i+1)
+		t.Run(name, func(t *testing.T) {
+			username := student.Username
+			var s model.Student
+			s.Username = username
+			newValue := true
+			if err := s.UpdateIsConfirmed(newValue); err != nil {
+				t.Fatal(err)
+			}
+			// update the values in the student list for later checking
+			studentList[i].IsConfirmed = newValue
+			// diffTest(student, studentList[i], t)
+		})
+	}
 
-// func (t *UserTest) TestStudent_Get() {
-// 	username := studentList[index].Username
-// 	got = new(Student)
-// 	got.Username = username
-// 	err := student.Get()
+	newPriorities := [][]int{
+		[]int{1, 2, 3, 0},
+		[]int{3, 2, 1, 0},
+		[]int{1, 3, 0, 2},
+	}
 
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	for i, student := range studentList {
+		name := fmt.Sprintf("Update Priority #%d", i+1)
 
-// 	want := &studentList[index]
+		t.Run(name, func(t *testing.T) {
+			newPriority := newPriorities[i]
 
-// 	if err := bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(want.Password)); err != nil {
-// 		t.Fatal(err)
-// 	}
+			var s = new(model.Student)
+			s.Username = student.Username
 
-// 	got.Info.Password = want.Info.Password
-// 	diffTest(got, want, t)
-// }
+			if err := s.UpdatePriority(newPriority); err != nil {
+				t.Fatal(err)
+			}
+			// update the values in the student list for later checking
+			studentList[i].Priority = newPriority
+			// diffTest(s, studentList[0], t)
+		})
+	}
+
+	for i, s := range studentList {
+		name := fmt.Sprintf("GET %d", i)
+		t.Run(name, func(t *testing.T) {
+			username := s.Username
+			got := new(model.Student)
+			got.Username = username
+
+			if err := got.Get(); err != nil {
+				t.Fatal(err)
+			}
+
+			want := &studentList[i]
+
+			if err := bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(want.Password)); err != nil {
+				t.Fatal(err)
+			}
+
+			got.Info.Password = want.Info.Password
+			diffTest(got, want, t)
+		})
+	}
+}
