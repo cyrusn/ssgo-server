@@ -20,7 +20,7 @@ func TestStudent(t *testing.T) {
 	for i, sts := range studentList {
 		name := fmt.Sprintf("Insert %d", i)
 		t.Run(name, func(t *testing.T) {
-			if err := sts.Insert(); err != nil {
+			if err := repo.StudentDB.Insert(&sts); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -29,16 +29,15 @@ func TestStudent(t *testing.T) {
 	t.Run("Insert Duplicated student", func(t *testing.T) {
 		helper.ExpectError("Insert Duplicated student", t, func() {
 			s := studentList[0]
-			if err := s.Insert(); err != nil {
+			if err := repo.StudentDB.Insert(&s); err != nil {
 				panic(err)
 			}
 		})
 	})
 
 	t.Run("studentList_get", func(t *testing.T) {
-		var students model.StudentList
-
-		if _, err := students.Get(); err != nil {
+		students, err := repo.StudentDB.List()
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -54,9 +53,8 @@ func TestStudent(t *testing.T) {
 	for i, student := range studentList {
 		name := fmt.Sprintf("Update Is Confirmed #%d", i+1)
 		t.Run(name, func(t *testing.T) {
-			var s model.Student
 			newValue := true
-			if err := s.UpdateIsConfirmed(student.Username, newValue); err != nil {
+			if err := repo.StudentDB.UpdateIsConfirmed(student.Username, newValue); err != nil {
 				t.Fatal(err)
 			}
 			// update the values in the student list for later checking
@@ -77,9 +75,7 @@ func TestStudent(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			newPriority := newPriorities[i]
 
-			var s = new(model.Student)
-
-			if err := s.UpdatePriority(student.Username, newPriority); err != nil {
+			if err := repo.StudentDB.UpdatePriority(student.Username, newPriority); err != nil {
 				t.Fatal(err)
 			}
 			// update the values in the student list for later checking
@@ -92,8 +88,8 @@ func TestStudent(t *testing.T) {
 		name := fmt.Sprintf("GET %d", i)
 		t.Run(name, func(t *testing.T) {
 			username := s.Username
-			got := new(model.Student)
-			if _, err := got.Get(username); err != nil {
+			got, err := repo.StudentDB.Get(username)
+			if err != nil {
 				t.Fatal(err)
 			}
 

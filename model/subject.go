@@ -13,7 +13,7 @@ type Subject struct {
 type SubjestList []*Subject
 
 // Insert insert subject information to database
-func (s *Subject) Insert() error {
+func (db SubjectDB) Insert(s *Subject) error {
 	_, err := db.Exec(`
     INSERT INTO subject (
       code, gp, name, cname, capacity
@@ -26,11 +26,12 @@ func (s *Subject) Insert() error {
 }
 
 // Get return Subject by subject code
-func (s *Subject) Get(subjectCode string) (*Subject, error) {
+func (db SubjectDB) Get(subjectCode string) (*Subject, error) {
 	row := db.QueryRow(
 		"SELECT * FROM subject where code = ?",
 		subjectCode,
 	)
+	s := new(Subject)
 	if err := row.Scan(&s.Code, &s.Group, &s.Name, &s.Cname, &s.Capacity); err != nil {
 		return nil, err
 	}
@@ -39,12 +40,14 @@ func (s *Subject) Get(subjectCode string) (*Subject, error) {
 }
 
 // AllSubjects return all subjects
-func (list SubjestList) Get() (SubjestList, error) {
+func (db SubjectDB) List() ([]*Subject, error) {
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
+	var list []*Subject
 
 	for rows.Next() {
 		s := new(Subject)
@@ -60,7 +63,7 @@ func (list SubjestList) Get() (SubjestList, error) {
 }
 
 // UpdateCapacity update subject Capacity by subject Code
-func (s *Subject) UpdateCapacity(subjectCode string, capacity int) error {
+func (db SubjectDB) UpdateCapacity(subjectCode string, capacity int) error {
 	_, err := db.Exec(`
 		UPDATE subject set
 			capacity = ?

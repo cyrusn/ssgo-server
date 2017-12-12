@@ -20,7 +20,7 @@ func TestTeacher(t *testing.T) {
 	for i, teacher := range teachers {
 		name := fmt.Sprintf("Teacher_Insert #%d", i+1)
 		t.Run(name, func(t *testing.T) {
-			if err := teacher.Insert(); err != nil {
+			if err := repo.TeacherDB.Insert(&teacher); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -30,12 +30,10 @@ func TestTeacher(t *testing.T) {
 		name := fmt.Sprintf("Teacher_Get #%d", i+1)
 		t.Run(name, func(t *testing.T) {
 			want := teachers[i]
-			teacher := new(model.Teacher)
-			_, err := teacher.Get(want.Username)
+			teacher, err := repo.TeacherDB.Get(want.Username)
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			if err := bcrypt.CompareHashAndPassword(
 				[]byte(teacher.Password),
 				[]byte(want.Password),

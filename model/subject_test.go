@@ -19,7 +19,7 @@ func TestSubject(t *testing.T) {
 	for i, s := range subjectList {
 		name := fmt.Sprintf("Insert Subject #%d", i+1)
 		t.Run(name, func(t *testing.T) {
-			if err := s.Insert(); err != nil {
+			if err := repo.SubjectDB.Insert(&s); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -28,7 +28,7 @@ func TestSubject(t *testing.T) {
 	t.Run("Update Capacity", func(t *testing.T) {
 		for i, subject := range subjectList {
 			capacity := 20
-			if err := subject.UpdateCapacity(subject.Code, capacity); err != nil {
+			if err := repo.SubjectDB.UpdateCapacity(subject.Code, capacity); err != nil {
 				t.Fatal(err)
 			}
 			subjectList[i].Capacity = capacity
@@ -39,9 +39,9 @@ func TestSubject(t *testing.T) {
 		name := fmt.Sprintf("Get Each Subjects #%d", i+1)
 		t.Run(name, func(t *testing.T) {
 			want := subject
-			s := new(model.Subject)
 			subjectCode := want.Code
-			if _, err := s.Get(subjectCode); err != nil {
+			s, err := repo.SubjectDB.Get(subjectCode)
+			if err != nil {
 				t.Fatal(err)
 			}
 			helper.DiffTest(&want, s, t)
@@ -49,8 +49,8 @@ func TestSubject(t *testing.T) {
 	}
 
 	t.Run("Get All Subjects", func(t *testing.T) {
-		var subjects model.SubjestList
-		if _, err := subjects.Get(); err != nil {
+		subjects, err := repo.SubjectDB.List()
+		if err != nil {
 			t.Fatal(err)
 		}
 		for i, got := range subjects {

@@ -12,6 +12,8 @@ const (
 	DBPath = "../database/test.db"
 )
 
+var repo *model.Repository
+
 func init() {
 	log.SetFlags(log.LstdFlags + log.Lshortfile)
 }
@@ -19,7 +21,7 @@ func init() {
 func TestMain(m *testing.M) {
 	log.Println(`Cleaning up DB: `, DBPath)
 	cleanup(DBPath)
-	model.InitDB(DBPath)
+	repo = model.NewRepository(DBPath)
 	os.Exit(m.Run())
 }
 

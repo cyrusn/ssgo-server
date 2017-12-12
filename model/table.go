@@ -1,5 +1,7 @@
 package model
 
+import "database/sql"
+
 type schema struct {
 	name    string
 	content string
@@ -42,9 +44,9 @@ CREATE TABLE IF NOT EXISTS subject (
 );`
 
 // CreateTables create all tables for ssgo system in database
-func CreateTables() error {
+func CreateTables(db *sql.DB) error {
 	for _, s := range schemas {
-		err := createTable(s.content)
+		err := createTable(db, s.content)
 		if err != nil {
 			return err
 		}
@@ -53,9 +55,8 @@ func CreateTables() error {
 }
 
 // createTable create table by given schema
-func createTable(schema string) error {
-	_, err := db.Exec(schema)
-	if err != nil {
+func createTable(db *sql.DB, schema string) error {
+	if _, err := db.Exec(schema); err != nil {
 		return err
 	}
 	return nil

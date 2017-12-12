@@ -17,24 +17,8 @@ type Student struct {
 	Rank        int
 }
 
-type StudentList []*Student
-
-func convertBool2Int(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}
-
-func convertInt2Bool(i int) bool {
-	if i == 0 {
-		return false
-	}
-	return true
-}
-
 // Insert add new student to database.
-func (s *Student) Insert() error {
+func (db StudentDB) Insert(s *Student) error {
 	priority, err := json.Marshal(s.Priority)
 	if err != nil {
 		return err
@@ -76,7 +60,7 @@ func (s *Student) Insert() error {
 }
 
 // UpdatePriority will update student's priority.
-func (s *Student) UpdatePriority(username string, p []int) error {
+func (db StudentDB) UpdatePriority(username string, p []int) error {
 	priority, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -89,7 +73,7 @@ func (s *Student) UpdatePriority(username string, p []int) error {
 }
 
 // UpdateIsConfirmed will update student's isConfirmed.
-func (s *Student) UpdateIsConfirmed(username string, b bool) error {
+func (db StudentDB) UpdateIsConfirmed(username string, b bool) error {
 	statement := "UPDATE student set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
@@ -97,19 +81,21 @@ func (s *Student) UpdateIsConfirmed(username string, b bool) error {
 }
 
 // Get query student by username.
-func (s *Student) Get(username string) (*Student, error) {
+func (db StudentDB) Get(username string) (*Student, error) {
 	statement := "SELECT * FROM student where username = ?"
-
+	s := new(Student)
 	row := db.QueryRow(statement, username)
 	err := s.scanStudent(row)
 	if err != nil {
 		return nil, err
 	}
+
 	return s, nil
 }
 
 // All queries all students.
-func (list StudentList) Get() (StudentList, error) {
+func (db StudentDB) List() ([]*Student, error) {
+	var list []*Student
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {
 		return nil, err
@@ -165,4 +151,18 @@ func (s *Student) scanStudent(v interface{}) error {
 	s.IsConfirmed = convertInt2Bool(isConfirmed)
 
 	return nil
+}
+
+func convertBool2Int(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func convertInt2Bool(i int) bool {
+	if i == 0 {
+		return false
+	}
+	return true
 }

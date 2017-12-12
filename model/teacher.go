@@ -8,7 +8,7 @@ import (
 type Teacher User
 
 // Insert insert teacher user in database
-func (t *Teacher) Insert() error {
+func (db TeacherDB) Insert(t *Teacher) error {
 
 	password := []byte(t.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.MinCost)
@@ -33,8 +33,9 @@ func (t *Teacher) Insert() error {
 }
 
 // Get get teacher information from database
-func (t *Teacher) Get(username string) (*Teacher, error) {
+func (db TeacherDB) Get(username string) (*Teacher, error) {
 	statement := "SELECT * FROM teacher where username = ?"
+	t := new(Teacher)
 	if err := db.QueryRow(statement, username).Scan(
 		&t.Username,
 		&t.Password,
