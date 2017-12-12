@@ -10,7 +10,7 @@ var (
 	Port string
 )
 
-func init() {
+func Start() {
 	flag.Usage = func() {
 		const welcomeText = "Subject Selection server for LPSS.\nUsage:"
 		fmt.Println(welcomeText)
@@ -24,9 +24,9 @@ func init() {
 
 	flag.StringVar(&Port, "port", defaultPort, usagePort)
 	flag.StringVar(&Port, "p", defaultPort, usagePort+" shorthand")
-}
 
-// Parse parses the flag for server
-func Parse() {
+	flag.VisitAll(func(f *flag.Flag) {
+		fmt.Println(f)
+	})
 	flag.Parse()
 }

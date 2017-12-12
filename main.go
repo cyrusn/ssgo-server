@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	cli.Parse()
+	cli.Start()
 }
 
 func main() {

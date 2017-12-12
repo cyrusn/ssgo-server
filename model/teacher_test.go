@@ -6,7 +6,6 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/cyrusn/ssgo/helper"
 	"github.com/cyrusn/ssgo/model"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -42,7 +41,7 @@ func TestTeacher(t *testing.T) {
 			}
 
 			teacher.Password = want.Password
-			helper.DiffTest(teacher, &want, t)
+			diffTest(teacher, &want, t)
 		})
 	}
 }

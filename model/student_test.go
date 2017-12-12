@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cyrusn/ssgo/helper"
 	"github.com/cyrusn/ssgo/model"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,7 +26,7 @@ func TestStudent(t *testing.T) {
 	}
 
 	t.Run("Insert Duplicated student", func(t *testing.T) {
-		helper.ExpectError("Insert Duplicated student", t, func() {
+		expectError("Insert Duplicated student", t, func() {
 			s := studentList[0]
 			if err := repo.StudentDB.Insert(&s); err != nil {
 				panic(err)
@@ -46,7 +45,7 @@ func TestStudent(t *testing.T) {
 
 			// reset hashedPassword to un-hashed one for check the diff
 			got.Password = want.Password
-			helper.DiffTest(got, want, t)
+			diffTest(got, want, t)
 		}
 	})
 
@@ -59,7 +58,7 @@ func TestStudent(t *testing.T) {
 			}
 			// update the values in the student list for later checking
 			studentList[i].IsConfirmed = newValue
-			// helper.DiffTest(student, studentList[i], t)
+			// diffTest(student, studentList[i], t)
 		})
 	}
 
@@ -80,7 +79,7 @@ func TestStudent(t *testing.T) {
 			}
 			// update the values in the student list for later checking
 			studentList[i].Priority = newPriority
-			// helper.DiffTest(s, studentList[0], t)
+			// diffTest(s, studentList[0], t)
 		})
 	}
 
@@ -100,7 +99,7 @@ func TestStudent(t *testing.T) {
 			}
 
 			got.Password = want.Password
-			helper.DiffTest(got, want, t)
+			diffTest(got, want, t)
 		})
 	}
 }
