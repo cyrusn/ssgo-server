@@ -15,13 +15,13 @@ import (
 )
 
 type MockStudentStore struct {
-	StudentList []model.Student
+	StudentList []*model.Student
 }
 
-var studentList = []model.Student{
-	model.Student{model.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
-	model.Student{model.Info{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
-	model.Student{model.Info{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
+var studentList = []*model.Student{
+	&model.Student{model.User{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
+	&model.Student{model.User{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
+	&model.Student{model.User{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
 }
 var store = &MockStudentStore{studentList}
 var env = &handlers.Env{StudentStore: store}
@@ -29,18 +29,14 @@ var env = &handlers.Env{StudentStore: store}
 func (store *MockStudentStore) Get(username string) (*model.Student, error) {
 	for _, s := range store.StudentList {
 		if s.Username == username {
-			return &s, nil
+			return s, nil
 		}
 	}
 	return nil, errors.New("User not found")
 }
 
-func (store *MockStudentStore) All() (model.StudentList, error) {
-	var list model.StudentList
-	for _, s := range store.StudentList {
-		list = append(list, &s)
-	}
-	return list, nil
+func (store *MockStudentStore) List() ([]*model.Student, error) {
+	return studentList, nil
 }
 
 func (store *MockStudentStore) UpdatePriority(username string, priority []int) error {
@@ -80,7 +76,7 @@ func TestStudentHandlers(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			want := &student
+			want := student
 			helper.DiffTest(got, want, t)
 		})
 	}
@@ -95,18 +91,14 @@ func TestStudentHandlers(t *testing.T) {
 
 		resp := w.Result()
 		body, _ := ioutil.ReadAll(resp.Body)
-		got := new(model.StudentList)
+		var got []*model.Student
 
-		var want model.StudentList
-		for _, sts := range store.StudentList {
-			want = append(want, &sts)
-		}
-
-		if err := json.Unmarshal(body, got); err != nil {
+		want := studentList
+		if err := json.Unmarshal(body, &got); err != nil {
 			t.Fatal(err)
 		}
 
-		helper.DiffTest(got, &want, t)
+		helper.DiffTest(got, want, t)
 	})
 
 	// Test UpdateStudentPriority

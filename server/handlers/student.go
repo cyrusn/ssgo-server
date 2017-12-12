@@ -6,7 +6,8 @@ import (
 
 // GetStudentHandler get student information by given username
 func (env *Env) GetStudentHandler(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
+	vars := env.Vars(r)
+	username := vars["username"]
 	s, err := env.StudentStore.Get(username)
 
 	errCode := http.StatusBadRequest
@@ -20,7 +21,7 @@ func (env *Env) GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 
 // AllStudentsHandler get all students information
 func (env *Env) AllStudentsHandler(w http.ResponseWriter, r *http.Request) {
-	list, err := env.StudentListStore.Get()
+	list, err := env.List()
 	errCode := http.StatusBadRequest
 
 	if err != nil {
