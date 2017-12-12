@@ -11,9 +11,9 @@ import (
 
 // create a student list for testing
 var studentList = []model.Student{
-	model.Student{model.Info{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
-	model.Student{model.Info{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
-	model.Student{model.Info{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
+	model.Student{model.User{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
+	model.Student{model.User{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
+	model.Student{model.User{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
 }
 
 func TestStudent(t *testing.T) {
@@ -46,7 +46,7 @@ func TestStudent(t *testing.T) {
 			want := &studentList[i]
 
 			// reset hashedPassword to un-hashed one for check the diff
-			got.Info.Password = want.Info.Password
+			got.Password = want.Password
 			helper.DiffTest(got, want, t)
 		}
 	})
@@ -103,7 +103,7 @@ func TestStudent(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			got.Info.Password = want.Info.Password
+			got.Password = want.Password
 			helper.DiffTest(got, want, t)
 		})
 	}

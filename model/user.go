@@ -1,7 +1,7 @@
 package model
 
 // Info store common information of both teacher or student user
-type Info struct {
+type User struct {
 	Username string
 	Password string
 	Name     string

@@ -5,7 +5,7 @@ import (
 )
 
 // Teacher store information of teacher user
-type Teacher Info
+type Teacher User
 
 // Insert insert teacher user in database
 func (t *Teacher) Insert() error {

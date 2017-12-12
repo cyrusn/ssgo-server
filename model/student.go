@@ -9,7 +9,7 @@ import (
 
 // Student stores information for student user.
 type Student struct {
-	Info
+	User
 	ClassCode   string
 	ClassNo     int
 	Priority    []int
@@ -136,10 +136,10 @@ func (s *Student) scanStudent(v interface{}) error {
 	var err error
 
 	var args = []interface{}{
-		&s.Info.Username,
-		&s.Info.Password,
-		&s.Info.Name,
-		&s.Info.Cname,
+		&s.Username,
+		&s.Password,
+		&s.Name,
+		&s.Cname,
 		&s.ClassCode,
 		&s.ClassNo,
 		&priority,
