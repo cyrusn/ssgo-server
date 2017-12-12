@@ -31,8 +31,7 @@ func TestTeacher(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			want := teachers[i]
 			teacher := new(model.Teacher)
-			teacher.Username = want.Username
-			err := teacher.Get()
+			_, err := teacher.Get(want.Username)
 			if err != nil {
 				t.Fatal(err)
 			}

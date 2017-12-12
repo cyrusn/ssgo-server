@@ -26,24 +26,23 @@ func (s *Subject) Insert() error {
 }
 
 // Get return Subject by subject code
-func (s *Subject) Get() error {
-	subjectCode := s.Code
+func (s *Subject) Get(subjectCode string) (*Subject, error) {
 	row := db.QueryRow(
 		"SELECT * FROM subject where code = ?",
 		subjectCode,
 	)
 	if err := row.Scan(&s.Code, &s.Group, &s.Name, &s.Cname, &s.Capacity); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return s, nil
 }
 
 // AllSubjects return all subjects
-func (list SubjestList) Get() error {
+func (list SubjestList) Get() (SubjestList, error) {
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -52,17 +51,16 @@ func (list SubjestList) Get() error {
 		if err := rows.Scan(
 			&s.Code, &s.Group, &s.Name, &s.Cname, &s.Capacity,
 		); err != nil {
-			return err
+			return nil, err
 		}
 
 		list = append(list, s)
 	}
-	return nil
+	return list, nil
 }
 
 // UpdateCapacity update subject Capacity by subject Code
-func (s *Subject) UpdateCapacity(capacity int) error {
-	subjectCode := s.Code
+func (s *Subject) UpdateCapacity(subjectCode string, capacity int) error {
 	_, err := db.Exec(`
 		UPDATE subject set
 			capacity = ?

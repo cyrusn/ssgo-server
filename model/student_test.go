@@ -38,7 +38,7 @@ func TestStudent(t *testing.T) {
 	t.Run("studentList_get", func(t *testing.T) {
 		var students model.StudentList
 
-		if err := students.Get(); err != nil {
+		if _, err := students.Get(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -54,11 +54,9 @@ func TestStudent(t *testing.T) {
 	for i, student := range studentList {
 		name := fmt.Sprintf("Update Is Confirmed #%d", i+1)
 		t.Run(name, func(t *testing.T) {
-			username := student.Username
 			var s model.Student
-			s.Username = username
 			newValue := true
-			if err := s.UpdateIsConfirmed(newValue); err != nil {
+			if err := s.UpdateIsConfirmed(student.Username, newValue); err != nil {
 				t.Fatal(err)
 			}
 			// update the values in the student list for later checking
@@ -80,9 +78,8 @@ func TestStudent(t *testing.T) {
 			newPriority := newPriorities[i]
 
 			var s = new(model.Student)
-			s.Username = student.Username
 
-			if err := s.UpdatePriority(newPriority); err != nil {
+			if err := s.UpdatePriority(student.Username, newPriority); err != nil {
 				t.Fatal(err)
 			}
 			// update the values in the student list for later checking
@@ -96,9 +93,7 @@ func TestStudent(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			username := s.Username
 			got := new(model.Student)
-			got.Username = username
-
-			if err := got.Get(); err != nil {
+			if _, err := got.Get(username); err != nil {
 				t.Fatal(err)
 			}
 

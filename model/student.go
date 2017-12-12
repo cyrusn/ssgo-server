@@ -35,7 +35,6 @@ func convertInt2Bool(i int) bool {
 
 // Insert add new student to database.
 func (s *Student) Insert() error {
-
 	priority, err := json.Marshal(s.Priority)
 	if err != nil {
 		return err
@@ -77,8 +76,7 @@ func (s *Student) Insert() error {
 }
 
 // UpdatePriority will update student's priority.
-func (s *Student) UpdatePriority(p []int) error {
-	username := s.Username
+func (s *Student) UpdatePriority(username string, p []int) error {
 	priority, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -91,8 +89,7 @@ func (s *Student) UpdatePriority(p []int) error {
 }
 
 // UpdateIsConfirmed will update student's isConfirmed.
-func (s *Student) UpdateIsConfirmed(b bool) error {
-	username := s.Username
+func (s *Student) UpdateIsConfirmed(username string, b bool) error {
 	statement := "UPDATE student set is_confirmed = ? WHERE username = ?;"
 
 	_, err := db.Exec(statement, convertBool2Int(b), username)
@@ -100,19 +97,22 @@ func (s *Student) UpdateIsConfirmed(b bool) error {
 }
 
 // Get query student by username.
-func (s *Student) Get() error {
-	username := s.Username
+func (s *Student) Get(username string) (*Student, error) {
 	statement := "SELECT * FROM student where username = ?"
 
 	row := db.QueryRow(statement, username)
-	return s.scanStudent(row)
+	err := s.scanStudent(row)
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 // All queries all students.
-func (list StudentList) Get() error {
+func (list StudentList) Get() (StudentList, error) {
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer rows.Close()
@@ -121,12 +121,12 @@ func (list StudentList) Get() error {
 		s := new(Student)
 		err := s.scanStudent(rows)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		list = append(list, s)
 	}
 
-	return nil
+	return list, nil
 }
 
 // scanStudent by *sql.Row or *sql.Rows.

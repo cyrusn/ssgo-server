@@ -33,13 +33,16 @@ func (t *Teacher) Insert() error {
 }
 
 // Get get teacher information from database
-func (t *Teacher) Get() error {
+func (t *Teacher) Get(username string) (*Teacher, error) {
 	statement := "SELECT * FROM teacher where username = ?"
-	username := t.Username
-	return db.QueryRow(statement, username).Scan(
+	if err := db.QueryRow(statement, username).Scan(
 		&t.Username,
 		&t.Password,
 		&t.Name,
 		&t.Cname,
-	)
+	); err != nil {
+		return nil, err
+	}
+
+	return t, nil
 }

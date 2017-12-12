@@ -30,8 +30,7 @@ func ExampleGet() {
 	model.InitDB("./testing.db")
 
 	student := new(model.Student)
-	student.Info.Username = "student1"
-	err := student.Get()
+	student, err := student.Get("student1")
 	if err != nil {
 		log.Fatal(err)
 	}

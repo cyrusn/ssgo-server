@@ -28,7 +28,7 @@ func TestSubject(t *testing.T) {
 	t.Run("Update Capacity", func(t *testing.T) {
 		for i, subject := range subjectList {
 			capacity := 20
-			if err := subject.UpdateCapacity(capacity); err != nil {
+			if err := subject.UpdateCapacity(subject.Code, capacity); err != nil {
 				t.Fatal(err)
 			}
 			subjectList[i].Capacity = capacity
@@ -40,8 +40,8 @@ func TestSubject(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			want := subject
 			s := new(model.Subject)
-			s.Code = want.Code
-			if err := s.Get(); err != nil {
+			subjectCode := want.Code
+			if _, err := s.Get(subjectCode); err != nil {
 				t.Fatal(err)
 			}
 			helper.DiffTest(&want, s, t)
@@ -50,7 +50,7 @@ func TestSubject(t *testing.T) {
 
 	t.Run("Get All Subjects", func(t *testing.T) {
 		var subjects model.SubjestList
-		if err := subjects.Get(); err != nil {
+		if _, err := subjects.Get(); err != nil {
 			t.Fatal(err)
 		}
 		for i, got := range subjects {
@@ -58,5 +58,4 @@ func TestSubject(t *testing.T) {
 			helper.DiffTest(want, got, t)
 		}
 	})
-
 }
