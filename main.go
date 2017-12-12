@@ -1,37 +1,39 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/cyrusn/ssgo/model"
+	"github.com/cyrusn/ssgo/server/handlers"
+	"github.com/gorilla/mux"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var env handlers.Env
+var repo *model.Repository
+
+const (
+	DBPath = "./database/test.db"
+)
+
+func init() {
+	repo = model.NewRepository(DBPath)
+	env.StudentStore = repo.StudentDB
+	env.Vars = mux.Vars
+}
+func YourHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Gorilla!\n"))
+}
+
 func main() {
-	db, err := model.InitDB("./database/test.db")
-	if err != nil {
-		panic(err)
-	}
+	r := mux.NewRouter()
+	// Routes consist of a path and a handler function.
 
-	if err = db.CreateStudentTable(); err != nil {
-		panic(err)
-	}
+	r.HandleFunc("/", YourHandler)
+	r.HandleFunc("/students/{username}", env.GetStudentHandler)
 
-	studentList := []model.Student{
-		model.Student{"cyrusn", "顏昭洋"},
-		model.Student{"winnie", "陳欣兒"},
-	}
-	for _, sts := range studentList {
-		if err = db.AddStudent(sts); err != nil {
-			panic(err)
-		}
-	}
-
-	students, err := db.AllStudents()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, sts := range students {
-		fmt.Println(sts)
-	}
+	// Bind to a port and pass our router in
+	log.Fatal(http.ListenAndServe(":8000", r))
 }
