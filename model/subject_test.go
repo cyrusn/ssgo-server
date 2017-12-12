@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cyrusn/ssgo/helper"
 	"github.com/cyrusn/ssgo/model"
 )
 
@@ -43,7 +44,7 @@ func TestSubject(t *testing.T) {
 			if err := s.Get(); err != nil {
 				t.Fatal(err)
 			}
-			diffTest(&want, s, t)
+			helper.DiffTest(&want, s, t)
 		})
 	}
 
@@ -55,7 +56,7 @@ func TestSubject(t *testing.T) {
 
 		for i, got := range subjects {
 			want := &subjectList[i]
-			diffTest(want, got, t)
+			helper.DiffTest(want, got, t)
 		}
 	})
 

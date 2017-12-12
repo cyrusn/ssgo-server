@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cyrusn/ssgo/helper"
 	"github.com/cyrusn/ssgo/model"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,7 +27,7 @@ func TestStudent(t *testing.T) {
 	}
 
 	t.Run("Insert Duplicated student", func(t *testing.T) {
-		expectError("Insert Duplicated student", t, func() {
+		helper.ExpectError("Insert Duplicated student", t, func() {
 			s := studentList[0]
 			if err := s.Insert(); err != nil {
 				panic(err)
@@ -34,10 +35,10 @@ func TestStudent(t *testing.T) {
 		})
 	})
 
-	t.Run("AllStudents", func(t *testing.T) {
+	t.Run("studentList_get", func(t *testing.T) {
+		var students model.StudentList
 
-		students, err := model.AllStudents()
-		if err != nil {
+		if err := students.Get(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -46,7 +47,7 @@ func TestStudent(t *testing.T) {
 
 			// reset hashedPassword to un-hashed one for check the diff
 			got.Info.Password = want.Info.Password
-			diffTest(got, want, t)
+			helper.DiffTest(got, want, t)
 		}
 	})
 
@@ -62,7 +63,7 @@ func TestStudent(t *testing.T) {
 			}
 			// update the values in the student list for later checking
 			studentList[i].IsConfirmed = newValue
-			// diffTest(student, studentList[i], t)
+			// helper.DiffTest(student, studentList[i], t)
 		})
 	}
 
@@ -86,7 +87,7 @@ func TestStudent(t *testing.T) {
 			}
 			// update the values in the student list for later checking
 			studentList[i].Priority = newPriority
-			// diffTest(s, studentList[0], t)
+			// helper.DiffTest(s, studentList[0], t)
 		})
 	}
 
@@ -108,7 +109,7 @@ func TestStudent(t *testing.T) {
 			}
 
 			got.Info.Password = want.Info.Password
-			diffTest(got, want, t)
+			helper.DiffTest(got, want, t)
 		})
 	}
 }

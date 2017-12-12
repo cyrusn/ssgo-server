@@ -12,8 +12,8 @@ const (
 	DBPath = "../database/test.db"
 )
 
-type UserTest struct {
-	Test *testing.T
+func init() {
+	log.SetFlags(log.LstdFlags + log.Lshortfile)
 }
 
 func TestMain(m *testing.M) {

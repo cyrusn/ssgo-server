@@ -17,6 +17,8 @@ type Student struct {
 	Rank        int
 }
 
+type StudentList []*Student
+
 func convertBool2Int(b bool) int {
 	if b {
 		return 1
@@ -106,27 +108,25 @@ func (s *Student) Get() error {
 	return s.scanStudent(row)
 }
 
-// AllStudents queries all students.
-func AllStudents() ([]*Student, error) {
+// All queries all students.
+func (list StudentList) Get() error {
 	rows, err := db.Query("SELECT * FROM student")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer rows.Close()
-
-	var students []*Student
 
 	for rows.Next() {
 		s := new(Student)
 		err := s.scanStudent(rows)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		students = append(students, s)
+		list = append(list, s)
 	}
 
-	return students, nil
+	return nil
 }
 
 // scanStudent by *sql.Row or *sql.Rows.
