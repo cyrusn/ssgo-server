@@ -9,6 +9,7 @@ import (
 // Env store all config and nessessary stores for retrieve data
 type Env struct {
 	Vars func(*http.Request) map[string]string
+	Port string
 	StudentStore
 }
 

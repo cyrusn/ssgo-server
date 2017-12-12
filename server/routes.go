@@ -1,21 +1,36 @@
 package server
 
-// import "net/http"
-//
-// type Route struct {
-// 	Path    string
-// 	Methods []string
-// 	// Scope   []string
-// 	Handler func(http.ResponseWriter, *http.Request)
-// }
-//
-//
-// var routes = []Routes{
-// 	Route{
-// 		"/get/students/lpstudent1",
-// 		[]string{"GET"}
-// 	}
-// }
+import (
+	"net/http"
+
+	"github.com/cyrusn/ssgo/server/handlers"
+)
+
+type Route struct {
+	Path    string
+	Methods []string
+	// Scope   []string
+	Handler func(http.ResponseWriter, *http.Request)
+}
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(`{"message":"Welcome to SSGO system"}`))
+}
+
+func Routes(env handlers.Env) []Route {
+	return []Route{
+		Route{
+			"/",
+			[]string{"GET"},
+			HomeHandler,
+		},
+		Route{
+			"/students/{username}",
+			[]string{"GET"},
+			env.GetStudentHandler,
+		},
+	}
+}
 
 // var routes = []Routes{
 // 	Route{
