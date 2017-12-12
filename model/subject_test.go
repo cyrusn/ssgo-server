@@ -49,11 +49,10 @@ func TestSubject(t *testing.T) {
 	}
 
 	t.Run("Get All Subjects", func(t *testing.T) {
-		subjects, err := model.AllSubjects()
-		if err != nil {
+		var subjects model.SubjestList
+		if err := subjects.Get(); err != nil {
 			t.Fatal(err)
 		}
-
 		for i, got := range subjects {
 			want := &subjectList[i]
 			helper.DiffTest(want, got, t)

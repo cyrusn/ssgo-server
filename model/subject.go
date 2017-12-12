@@ -10,6 +10,8 @@ type Subject struct {
 	Capacity int
 }
 
+type SubjestList []*Subject
+
 // Insert insert subject information to database
 func (s *Subject) Insert() error {
 	_, err := db.Exec(`
@@ -38,11 +40,10 @@ func (s *Subject) Get() error {
 }
 
 // AllSubjects return all subjects
-func AllSubjects() ([]*Subject, error) {
-	var subjects []*Subject
+func (list SubjestList) Get() error {
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer rows.Close()
 
@@ -51,12 +52,12 @@ func AllSubjects() ([]*Subject, error) {
 		if err := rows.Scan(
 			&s.Code, &s.Group, &s.Name, &s.Cname, &s.Capacity,
 		); err != nil {
-			return nil, err
+			return err
 		}
 
-		subjects = append(subjects, s)
+		list = append(list, s)
 	}
-	return subjects, nil
+	return nil
 }
 
 // UpdateCapacity update subject Capacity by subject Code
