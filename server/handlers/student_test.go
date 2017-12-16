@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http/httptest"
+	"reflect"
+	"strings"
 
 	"testing"
 
-	"github.com/cyrusn/ssgo/helper"
 	"github.com/cyrusn/ssgo/model"
 	"github.com/cyrusn/ssgo/server/handlers"
+	"github.com/gorilla/mux"
 )
 
 type MockStudentStore struct {
@@ -19,12 +21,37 @@ type MockStudentStore struct {
 }
 
 var studentList = []*model.Student{
-	&model.Student{model.User{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
-	&model.Student{model.User{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
-	&model.Student{model.User{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
+	&model.Student{
+		User:        model.User{Username: "lpstudent1", Password: "password1", Name: "Alice Li", Cname: "李麗絲"},
+		ClassCode:   "3A",
+		ClassNo:     1,
+		Priority:    []int{0, 1, 2, 3},
+		IsConfirmed: false,
+		Rank:        -1,
+	},
+	&model.Student{
+		User:        model.User{Username: "lpstudent2", Password: "password2", Name: "Bob Li", Cname: "李鮑伯"},
+		ClassCode:   "3B",
+		ClassNo:     2,
+		Priority:    []int{3, 2, 1, 0},
+		IsConfirmed: false,
+		Rank:        -1,
+	},
+	&model.Student{
+		User:        model.User{Username: "lpstudent3", Password: "password3", Name: "Charlie Li", Cname: "李查利"},
+		ClassCode:   "3C",
+		ClassNo:     3,
+		Priority:    []int{},
+		IsConfirmed: true,
+		Rank:        -1,
+	},
 }
+
 var store = &MockStudentStore{studentList}
-var env = &handlers.Env{StudentStore: store}
+var env = &handlers.Env{
+	StudentStore: store,
+	Vars:         mux.Vars,
+}
 
 func (store *MockStudentStore) Get(username string) (*model.Student, error) {
 	for _, s := range store.StudentList {
@@ -58,63 +85,106 @@ func (store *MockStudentStore) UpdatePriority(username string, priority []int) e
 }
 
 func TestStudentHandlers(t *testing.T) {
-	// Test Get
+	// Test Get for each student
 	for i, student := range store.StudentList {
-		w := httptest.NewRecorder()
 		name := fmt.Sprintf("GetStudentHandlers #%d", i+1)
-
-		t.Run(name, func(t *testing.T) {
-			url := fmt.Sprintf("/api/get/student?username=lpstudent%d", i+1)
-			req := httptest.NewRequest("Get", url, nil)
-
-			env.GetStudentHandler(w, req)
-			resp := w.Result()
-			body, _ := ioutil.ReadAll(resp.Body)
-
-			got := new(model.Student)
-			if err := json.Unmarshal(body, got); err != nil {
-				t.Fatal(err)
-			}
-
-			want := student
-			helper.DiffTest(got, want, t)
-		})
+		t.Run(name, testGetSudent(i, student))
 	}
-
 	// Test All
-	t.Run("AllStudents", func(t *testing.T) {
-		w := httptest.NewRecorder()
+	t.Run("List all students", testListAllStudent)
 
-		url := fmt.Sprintf("/api/get/student/all")
-		req := httptest.NewRequest("Get", url, nil)
-		env.AllStudentsHandler(w, req)
+	// Test UpdateStudentPriority
+	t.Run("UpdateStudentPriority", testUpdateStudentPriority)
+}
+
+var testGetSudent = func(i int, student *model.Student) func(t *testing.T) {
+	return func(t *testing.T) {
+		w := httptest.NewRecorder()
+		path := fmt.Sprintf("/students/lpstudent%d", i+1)
+		req := httptest.NewRequest("GET", path, nil)
+
+		r := mux.NewRouter()
+		r.HandleFunc("/students/{username}", env.GetStudentHandler)
+		r.ServeHTTP(w, req)
 
 		resp := w.Result()
-		body, _ := ioutil.ReadAll(resp.Body)
-		var got []*model.Student
 
-		want := studentList
-		if err := json.Unmarshal(body, &got); err != nil {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
 			t.Fatal(err)
 		}
 
-		helper.DiffTest(got, want, t)
-	})
+		got := new(model.Student)
+		if err := json.Unmarshal(body, got); err != nil {
+			t.Fatal(err)
+		}
 
-	// Test UpdateStudentPriority
-	// t.Run("UpdateStudentPriority", func(t *testing.T) {
-	// 	// var result = []int{2, 1, 3, 0}
-	// 	for i, sts := range store.StudentList {
-	// 		w := httptest.NewRecorder()
-	//
-	// 		data := url.Values{"key": {"Value"}, "id": {"123"}}
-	//
-	// 		urlstring := fmt.Sprintf("/api/get/student/priority/update?username=lpstudent%d", i+1)
-	// 		req := httptest.NewRequest("POST", urlstring, strings.NewReader(data.Encode()))
-	//
-	// 		env.UpdateStudentPriorityHandler(w, req)
-	//
-	// 		fmt.Println(sts.Priority)
-	// 	}
-	// })
+		want := student
+		diffTest(got, want, t)
+	}
+}
+
+var testListAllStudent = func(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	url := fmt.Sprintf("/students/list")
+	req := httptest.NewRequest("Get", url, nil)
+
+	r := mux.NewRouter()
+	r.HandleFunc("/students/list", env.AllStudentsHandler)
+	r.ServeHTTP(w, req)
+
+	resp := w.Result()
+	body, _ := ioutil.ReadAll(resp.Body)
+	var got []*model.Student
+
+	if err := json.Unmarshal(body, &got); err != nil {
+		t.Fatal(err)
+	}
+
+	diffTest(got, studentList, t)
+}
+
+var testUpdateStudentPriority = func(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	r := mux.NewRouter()
+
+	for _, s := range studentList {
+		url := fmt.Sprintf("/students/%s/priority", s.Username)
+		r.HandleFunc("/students/{username}/priority", env.UpdateStudentPriorityHandler)
+
+		form := strings.NewReader(`{"priority":[0, 1, 2, 3]}`)
+		req := httptest.NewRequest("PUT", url, form)
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+	}
+
+	for _, s := range studentList {
+		diffTest(s.Priority, []int{0, 1, 2, 3}, t)
+	}
+}
+
+// expectError is a testing tool, it used to test for error handling
+func expectError(name string, t *testing.T, f func()) {
+	defer func(t *testing.T) {
+		err := recover()
+
+		if err == nil {
+			t.Fatalf("Error Test: [%s] did not return error", name)
+		}
+	}(t)
+	f()
+}
+
+// diffTest is simply test if there are differences of 2 structs
+func diffTest(got, want interface{}, t *testing.T) {
+	if !reflect.DeepEqual(want, got) {
+
+		t.Errorf(
+			"Incorrect!\ngot: %v\nwant: %v.\n",
+			got,
+			want,
+		)
+	}
 }
