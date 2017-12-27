@@ -2,11 +2,9 @@ package handlers_test
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 
 	"testing"
@@ -14,44 +12,6 @@ import (
 	"github.com/cyrusn/ssgo/model"
 	"github.com/gorilla/mux"
 )
-
-type MockStudentStore struct {
-	StudentList []*model.Student
-}
-
-var store = &MockStudentStore{studentList}
-
-func (store *MockStudentStore) Get(username string) (*model.Student, error) {
-	for _, s := range store.StudentList {
-		if s.Username == username {
-			return s, nil
-		}
-	}
-	return nil, errors.New("User not found")
-}
-
-func (store *MockStudentStore) List() ([]*model.Student, error) {
-	return studentList, nil
-}
-
-func (store *MockStudentStore) UpdateIsConfirmed(username string, isConfirmed bool) error {
-	student, err := store.Get(username)
-	if err != nil {
-		return err
-	}
-
-	student.IsConfirmed = isConfirmed
-	return nil
-}
-
-func (store *MockStudentStore) UpdatePriority(username string, priority []int) error {
-	student, err := store.Get(username)
-	if err != nil {
-		return err
-	}
-	student.Priority = priority
-	return nil
-}
 
 func TestStudentHandlers(t *testing.T) {
 	// Test Get for each student
@@ -146,29 +106,5 @@ var testUpdateStudentIsConfirm = func(t *testing.T) {
 	}
 	for _, s := range studentList {
 		diffTest(s.IsConfirmed, true, t)
-	}
-}
-
-// expectError is a testing tool, it used to test for error handling
-func expectError(name string, t *testing.T, f func()) {
-	defer func(t *testing.T) {
-		err := recover()
-
-		if err == nil {
-			t.Fatalf("Error Test: [%s] did not return error", name)
-		}
-	}(t)
-	f()
-}
-
-// diffTest is simply test if there are differences of 2 structs
-func diffTest(got, want interface{}, t *testing.T) {
-	if !reflect.DeepEqual(want, got) {
-
-		t.Errorf(
-			"Incorrect!\ngot: %v\nwant: %v.\n",
-			got,
-			want,
-		)
 	}
 }
