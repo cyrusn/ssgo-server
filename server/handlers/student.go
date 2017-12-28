@@ -13,7 +13,7 @@ type StudentStore interface {
 	Get(username string) (*model.Student, error)
 	List() ([]*model.Student, error)
 	UpdatePriority(username string, priority []int) error
-	UpdateIsConfirmed(username string, isConfirm bool) error
+	UpdateIsConfirmed(username string, isConfirmed bool) error
 }
 
 type priorityPostForm struct {
@@ -39,8 +39,8 @@ func (env *Env) GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// AllStudentsHandler get all students information
-func (env *Env) AllStudentsHandler(w http.ResponseWriter, r *http.Request) {
+// ListStudentsHandler get all students information
+func (env *Env) ListStudentsHandler(w http.ResponseWriter, r *http.Request) {
 	list, err := env.List()
 	errCode := http.StatusBadRequest
 
@@ -75,8 +75,8 @@ func (env *Env) UpdateStudentPriorityHandler(w http.ResponseWriter, r *http.Requ
 	jsonPrint(w, nil, errCode)
 }
 
-// UpdateStudentIsConfirmHandler update IsConfirmed
-func (env *Env) UpdateStudentIsConfirmHandler(w http.ResponseWriter, r *http.Request) {
+// UpdateStudentIsConfirmedHandler update IsConfirmed status of student
+func (env *Env) UpdateStudentIsConfirmedHandler(w http.ResponseWriter, r *http.Request) {
 	errCode := http.StatusBadRequest
 	vars := env.Vars(r)
 	username := vars["username"]

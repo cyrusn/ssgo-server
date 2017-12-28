@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 
@@ -12,6 +13,43 @@ import (
 	"github.com/cyrusn/ssgo/model"
 	"github.com/gorilla/mux"
 )
+
+type route struct {
+	url     string
+	methods []string
+	handler func(http.ResponseWriter, *http.Request)
+}
+
+var routes = []route{
+	route{
+		url:     "/students/",
+		methods: []string{"GET"},
+		handler: env.ListStudentsHandler,
+	},
+	route{
+		url:     "/students/{username}",
+		methods: []string{"GET"},
+		handler: env.GetStudentHandler,
+	},
+	route{
+		url:     "/students/{username}/priority",
+		methods: []string{"PUT"},
+		handler: env.UpdateStudentPriorityHandler,
+	},
+	route{
+		url:     "/students/{username}/confirm",
+		methods: []string{"PUT"},
+		handler: env.UpdateStudentIsConfirmedHandler,
+	},
+}
+
+var r = mux.NewRouter()
+
+func init() {
+	for _, route := range routes {
+		r.HandleFunc(route.url, route.handler).Methods(route.methods...)
+	}
+}
 
 func TestStudentHandlers(t *testing.T) {
 	// Test Get for each student
@@ -24,17 +62,14 @@ func TestStudentHandlers(t *testing.T) {
 	t.Run("UpdateStudentPriority", testUpdateStudentPriority)
 
 	// Test UpdateStudentIsConfirme
-	t.Run("UpdateStudentIsConfirmed", testUpdateStudentIsConfirm)
+	t.Run("UpdateStudentIsConfirmed", testUpdateStudentIsConfirmedHandler)
 }
 
 var testGetStudent = func(t *testing.T) {
 	for _, student := range studentList {
-		w := httptest.NewRecorder()
 		path := fmt.Sprintf("/students/%s", student.User.Username)
 		req := httptest.NewRequest("GET", path, nil)
-
-		r := mux.NewRouter()
-		r.HandleFunc("/students/{username}", env.GetStudentHandler)
+		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 
 		resp := w.Result()
@@ -43,6 +78,7 @@ var testGetStudent = func(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		got := new(model.Student)
 		if err := json.Unmarshal(body, got); err != nil {
 			t.Fatal(err)
@@ -53,19 +89,14 @@ var testGetStudent = func(t *testing.T) {
 }
 
 var testListAllStudent = func(t *testing.T) {
+
+	req := httptest.NewRequest("GET", "/students/", nil)
 	w := httptest.NewRecorder()
-
-	url := fmt.Sprintf("/students/list")
-	req := httptest.NewRequest("Get", url, nil)
-
-	r := mux.NewRouter()
-	r.HandleFunc("/students/list", env.AllStudentsHandler)
 	r.ServeHTTP(w, req)
 
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
 	var got []*model.Student
-
 	if err := json.Unmarshal(body, &got); err != nil {
 		t.Fatal(err)
 	}
@@ -74,16 +105,14 @@ var testListAllStudent = func(t *testing.T) {
 }
 
 var testUpdateStudentPriority = func(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := mux.NewRouter()
 
 	for _, s := range studentList {
 		url := fmt.Sprintf("/students/%s/priority", s.Username)
-		r.HandleFunc("/students/{username}/priority", env.UpdateStudentPriorityHandler)
 
 		form := strings.NewReader(`{"priority":[0, 1, 2, 3]}`)
 		req := httptest.NewRequest("PUT", url, form)
 		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 	}
 
@@ -92,16 +121,14 @@ var testUpdateStudentPriority = func(t *testing.T) {
 	}
 }
 
-var testUpdateStudentIsConfirm = func(t *testing.T) {
-	w := httptest.NewRecorder()
-	r := mux.NewRouter()
+var testUpdateStudentIsConfirmedHandler = func(t *testing.T) {
 
 	for _, s := range studentList {
-		url := fmt.Sprintf("/student/%s/isConfirm", s.Username)
-		r.HandleFunc("/student/{username}/isConfirm", env.UpdateStudentIsConfirmHandler)
+		url := fmt.Sprintf("/students/%s/confirm", s.Username)
 		form := strings.NewReader(`{"isConfirmed":true}`)
 		req := httptest.NewRequest("PUT", url, form)
 		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 	}
 	for _, s := range studentList {
