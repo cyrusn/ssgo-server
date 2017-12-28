@@ -4,50 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/http/httptest"
 	"strings"
 
 	"testing"
 
+	helper "github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
+	"github.com/cyrusn/ssgo/server"
 	"github.com/gorilla/mux"
 )
 
-type route struct {
-	url     string
-	methods []string
-	handler func(http.ResponseWriter, *http.Request)
-}
-
-var routes = []route{
-	route{
-		url:     "/students/",
-		methods: []string{"GET"},
-		handler: env.ListStudentsHandler,
-	},
-	route{
-		url:     "/students/{username}",
-		methods: []string{"GET"},
-		handler: env.GetStudentHandler,
-	},
-	route{
-		url:     "/students/{username}/priority",
-		methods: []string{"PUT"},
-		handler: env.UpdateStudentPriorityHandler,
-	},
-	route{
-		url:     "/students/{username}/confirm",
-		methods: []string{"PUT"},
-		handler: env.UpdateStudentIsConfirmedHandler,
-	},
-}
-
+var routes = server.Routes(env)
 var r = mux.NewRouter()
 
 func init() {
 	for _, route := range routes {
-		r.HandleFunc(route.url, route.handler).Methods(route.methods...)
+		r.HandleFunc(route.Path, route.Handler).Methods(route.Methods...)
 	}
 }
 
@@ -84,7 +57,7 @@ var testGetStudent = func(t *testing.T) {
 			t.Fatal(err)
 		}
 		want := student
-		diffTest(got, want, t)
+		helper.Diff(got, want, t)
 	}
 }
 
@@ -101,7 +74,7 @@ var testListAllStudent = func(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	diffTest(got, studentList, t)
+	helper.Diff(got, studentList, t)
 }
 
 var testUpdateStudentPriority = func(t *testing.T) {
@@ -117,7 +90,7 @@ var testUpdateStudentPriority = func(t *testing.T) {
 	}
 
 	for _, s := range studentList {
-		diffTest(s.Priority, []int{0, 1, 2, 3}, t)
+		helper.Diff(s.Priority, []int{0, 1, 2, 3}, t)
 	}
 }
 
@@ -132,6 +105,6 @@ var testUpdateStudentIsConfirmedHandler = func(t *testing.T) {
 		r.ServeHTTP(w, req)
 	}
 	for _, s := range studentList {
-		diffTest(s.IsConfirmed, true, t)
+		helper.Diff(s.IsConfirmed, true, t)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/cyrusn/ssgo/model"
 )
 
@@ -32,10 +33,10 @@ func (env *Env) GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 
 	errCode := http.StatusBadRequest
 	if err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
-	jsonPrint(w, s, errCode)
+	helper.PrintJSON(w, s, errCode)
 	return
 }
 
@@ -45,10 +46,10 @@ func (env *Env) ListStudentsHandler(w http.ResponseWriter, r *http.Request) {
 	errCode := http.StatusBadRequest
 
 	if err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
-	jsonPrint(w, list, errCode)
+	helper.PrintJSON(w, list, errCode)
 }
 
 // UpdateStudentPriorityHandler updated student's priority
@@ -58,21 +59,21 @@ func (env *Env) UpdateStudentPriorityHandler(w http.ResponseWriter, r *http.Requ
 	username := vars["username"]
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
 
 	var form = new(priorityPostForm)
 	if err := json.Unmarshal(body, form); err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
 
 	if err := env.StudentStore.UpdatePriority(username, form.Priority); err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
-	jsonPrint(w, nil, errCode)
+	helper.PrintJSON(w, nil, errCode)
 }
 
 // UpdateStudentIsConfirmedHandler update IsConfirmed status of student
@@ -82,17 +83,17 @@ func (env *Env) UpdateStudentIsConfirmedHandler(w http.ResponseWriter, r *http.R
 	username := vars["username"]
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
 
 	var form = new(isConfirmedPostForm)
 
 	if err := json.Unmarshal(body, form); err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 		return
 	}
 	if err := env.StudentStore.UpdateIsConfirmed(username, form.IsConfirmed); err != nil {
-		errPrint(w, err, errCode)
+		helper.PrintError(w, err, errCode)
 	}
 }
