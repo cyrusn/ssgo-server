@@ -28,3 +28,34 @@ var studentList = []*model.Student{
 		Rank:        -1,
 	},
 }
+
+var subjectList = []*model.Subject{
+	&model.Subject{
+		Code:     "bio",
+		Group:    1,
+		Name:     "Biology",
+		Cname:    "生物",
+		Capacity: 0,
+	},
+	&model.Subject{
+		Code:     "bafs",
+		Group:    1,
+		Name:     "Business, Accounting and Financial Studies",
+		Cname:    "企業、會計與財務概論",
+		Capacity: 0,
+	},
+	&model.Subject{
+		Code:     "ict",
+		Group:    2,
+		Name:     "Information and Communication Technology",
+		Cname:    "資訊及通訊科技",
+		Capacity: 0,
+	},
+	&model.Subject{
+		Code:     "econ",
+		Group:    2,
+		Name:     "Economics",
+		Cname:    "經濟",
+		Capacity: 0,
+	},
+}

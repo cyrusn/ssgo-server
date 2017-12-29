@@ -11,6 +11,7 @@ type Env struct {
 	Vars func(*http.Request) map[string]string
 	Port string
 	StudentStore
+	SubjectStore
 }
 
 // SubjectStore stores the interface for handler that query information about model.Subject

@@ -4,20 +4,32 @@ import (
 	"errors"
 
 	"github.com/cyrusn/ssgo/model"
+	"github.com/cyrusn/ssgo/server"
 	"github.com/cyrusn/ssgo/server/handlers"
 	"github.com/gorilla/mux"
 )
 
-var env = &handlers.Env{
-	StudentStore: store,
-	Vars:         mux.Vars,
+var (
+	routes       = server.Routes(env)
+	r            = mux.NewRouter()
+	studentStore = &MockStudentStore{studentList}
+	sujectStore  = &MockSubjectStore{subjectList}
+	env          = &handlers.Env{
+		StudentStore: studentStore,
+		SubjectStore: sujectStore,
+		Vars:         mux.Vars,
+	}
+)
+
+func init() {
+	for _, route := range routes {
+		r.HandleFunc(route.Path, route.Handler).Methods(route.Methods...)
+	}
 }
 
 type MockStudentStore struct {
 	StudentList []*model.Student
 }
-
-var store = &MockStudentStore{studentList}
 
 func (store *MockStudentStore) Get(username string) (*model.Student, error) {
 	for _, s := range store.StudentList {
@@ -49,4 +61,21 @@ func (store *MockStudentStore) UpdatePriority(username string, priority []int) e
 	}
 	student.Priority = priority
 	return nil
+}
+
+type MockSubjectStore struct {
+	SubjectList []*model.Subject
+}
+
+func (store *MockSubjectStore) Get(subjectCode string) (*model.Subject, error) {
+	for _, s := range store.SubjectList {
+		if s.Code == subjectCode {
+			return s, nil
+		}
+	}
+	return nil, errors.New("Subject not found")
+}
+
+func (store *MockSubjectStore) List() ([]*model.Subject, error) {
+	return store.SubjectList, nil
 }

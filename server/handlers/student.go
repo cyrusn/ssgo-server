@@ -42,7 +42,7 @@ func (env *Env) GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 
 // ListStudentsHandler get all students information
 func (env *Env) ListStudentsHandler(w http.ResponseWriter, r *http.Request) {
-	list, err := env.List()
+	list, err := env.StudentStore.List()
 	errCode := http.StatusBadRequest
 
 	if err != nil {

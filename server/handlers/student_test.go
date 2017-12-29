@@ -11,18 +11,7 @@ import (
 
 	helper "github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
-	"github.com/cyrusn/ssgo/server"
-	"github.com/gorilla/mux"
 )
-
-var routes = server.Routes(env)
-var r = mux.NewRouter()
-
-func init() {
-	for _, route := range routes {
-		r.HandleFunc(route.Path, route.Handler).Methods(route.Methods...)
-	}
-}
 
 func TestStudentHandlers(t *testing.T) {
 	// Test Get for each student
@@ -56,13 +45,12 @@ var testGetStudent = func(t *testing.T) {
 		if err := json.Unmarshal(body, got); err != nil {
 			t.Fatal(err)
 		}
-		want := student
-		helper.Diff(got, want, t)
+
+		helper.Diff(got, student, t)
 	}
 }
 
 var testListAllStudent = func(t *testing.T) {
-
 	req := httptest.NewRequest("GET", "/students/", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
@@ -78,7 +66,6 @@ var testListAllStudent = func(t *testing.T) {
 }
 
 var testUpdateStudentPriority = func(t *testing.T) {
-
 	for _, s := range studentList {
 		url := fmt.Sprintf("/students/%s/priority", s.Username)
 
@@ -95,7 +82,6 @@ var testUpdateStudentPriority = func(t *testing.T) {
 }
 
 var testUpdateStudentIsConfirmedHandler = func(t *testing.T) {
-
 	for _, s := range studentList {
 		url := fmt.Sprintf("/students/%s/confirm", s.Username)
 		form := strings.NewReader(`{"isConfirmed":true}`)
