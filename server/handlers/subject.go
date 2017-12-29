@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/cyrusn/ssgo/model"
@@ -13,6 +15,7 @@ import (
 type SubjectStore interface {
 	Get(subjectCode string) (*model.Subject, error)
 	List() ([]*model.Subject, error)
+	UpdateCapacity(subjectCode string, capacity int) error
 }
 
 // GetSubjectHandler get subject information by given subject code
@@ -39,4 +42,29 @@ func (env *Env) ListSubjectsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helper.PrintJSON(w, subjects, errCode)
+}
+
+type capacityPostForm struct {
+	Capacity int `json:"capacity"`
+}
+
+// UpdateSubjectCapacityHandler update subject capacity
+func (env *Env) UpdateSubjectCapacityHandler(w http.ResponseWriter, r *http.Request) {
+	vars := env.Vars(r)
+	subjectCode := vars["subjectCode"]
+	errCode := http.StatusBadRequest
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		helper.PrintError(w, err, errCode)
+	}
+	form := new(capacityPostForm)
+	if err := json.Unmarshal(body, form); err != nil {
+		helper.PrintError(w, err, errCode)
+	}
+
+	if err := env.SubjectStore.UpdateCapacity(subjectCode, form.Capacity); err != nil {
+		helper.PrintError(w, err, errCode)
+	}
+
+	helper.PrintJSON(w, nil, errCode)
 }

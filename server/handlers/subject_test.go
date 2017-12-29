@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	helper "github.com/cyrusn/goTestHelper"
@@ -14,6 +15,7 @@ import (
 func TestSubjectHandler(t *testing.T) {
 	t.Run("Get Subject", testGetSubjectHandler)
 	t.Run("List Subjects", testListSubjectsHandler)
+	t.Run("Update Subject Capacity", testUpdateSubjectCapacityHandler)
 }
 
 var testGetSubjectHandler = func(t *testing.T) {
@@ -57,5 +59,19 @@ var testListSubjectsHandler = func(t *testing.T) {
 	for i, subj := range got {
 		helper.Diff(subj, subjectList[i], t)
 	}
+}
 
+var testUpdateSubjectCapacityHandler = func(t *testing.T) {
+	for _, subj := range subjectList {
+		w := httptest.NewRecorder()
+		url := fmt.Sprintf("/subjects/%s/capacity", subj.Code)
+		form := strings.NewReader(`{"capacity":20}`)
+		req := httptest.NewRequest("PUT", url, form)
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+	}
+
+	for _, s := range subjectList {
+		helper.Diff(s.Capacity, 20, t)
+	}
 }

@@ -13,8 +13,3 @@ type Env struct {
 	StudentStore
 	SubjectStore
 }
-
-// SubjectStore stores the interface for handler that query information about model.Subject
-// type SubjectStore interface {
-// 	Get(string) (*model.Subject, error)
-// }

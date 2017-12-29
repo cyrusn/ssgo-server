@@ -18,11 +18,11 @@ type StudentStore interface {
 }
 
 type priorityPostForm struct {
-	Priority []int
+	Priority []int `json:"priority"`
 }
 
 type isConfirmedPostForm struct {
-	IsConfirmed bool
+	IsConfirmed bool `json:"isConfirmed"`
 }
 
 // GetStudentHandler get student information by given username

@@ -14,16 +14,9 @@ import (
 )
 
 func TestStudentHandlers(t *testing.T) {
-	// Test Get for each student
 	t.Run("Get Student", testGetStudent)
-
-	// Test All
 	t.Run("List all students", testListAllStudent)
-
-	// Test UpdateStudentPriority
 	t.Run("UpdateStudentPriority", testUpdateStudentPriority)
-
-	// Test UpdateStudentIsConfirme
 	t.Run("UpdateStudentIsConfirmed", testUpdateStudentIsConfirmedHandler)
 }
 

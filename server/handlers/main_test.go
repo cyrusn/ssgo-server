@@ -79,3 +79,12 @@ func (store *MockSubjectStore) Get(subjectCode string) (*model.Subject, error) {
 func (store *MockSubjectStore) List() ([]*model.Subject, error) {
 	return store.SubjectList, nil
 }
+
+func (store *MockSubjectStore) UpdateCapacity(subjectCode string, capacity int) error {
+	subj, err := store.Get(subjectCode)
+	if err != nil {
+		return err
+	}
+	subj.Capacity = capacity
+	return nil
+}
