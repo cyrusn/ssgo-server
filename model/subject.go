@@ -10,8 +10,6 @@ type Subject struct {
 	Capacity int
 }
 
-type SubjestList []*Subject
-
 // Insert insert subject information to database
 func (db SubjectDB) Insert(s *Subject) error {
 	_, err := db.Exec(`
@@ -39,7 +37,7 @@ func (db SubjectDB) Get(subjectCode string) (*Subject, error) {
 	return s, nil
 }
 
-// AllSubjects return all subjects
+// List return all subjects
 func (db SubjectDB) List() ([]*Subject, error) {
 	rows, err := db.Query("SELECT * FROM subject")
 	if err != nil {

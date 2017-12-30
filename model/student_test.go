@@ -4,29 +4,63 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // create a student list for testing
 var studentList = []model.Student{
-	model.Student{model.User{"lpstudent1", "password1", "Alice Li", "李麗絲"}, "3A", 1, []int{0, 1, 2, 3}, false, -1},
-	model.Student{model.User{"lpstudent2", "password2", "Bob Li", "李鮑伯"}, "3A", 2, []int{3, 2, 1, 0}, false, -1},
-	model.Student{model.User{"lpstudent3", "password3", "Charlie Li", "李查利"}, "3A", 3, []int{}, true, -1},
+	model.Student{
+		User: model.User{
+			Username: "lpstudent1",
+			Password: "password1",
+			Name:     "Alice Li",
+			Cname:    "李麗絲",
+		},
+		ClassCode:   "3A",
+		ClassNo:     1,
+		Priority:    []int{0, 1, 2, 3},
+		IsConfirmed: false,
+		Rank:        -1,
+	},
+	model.Student{
+		User: model.User{
+			Username: "lpstudent2",
+			Password: "password2",
+			Name:     "Bob Li",
+			Cname:    "李鮑伯",
+		},
+		ClassCode:   "3A",
+		ClassNo:     2,
+		Priority:    []int{3, 2, 1, 0},
+		IsConfirmed: false,
+		Rank:        -1,
+	},
+	model.Student{
+		User: model.User{
+			Username: "lpstudent3",
+			Password: "password3",
+			Name:     "Charlie Li",
+			Cname:    "李查利",
+		},
+		ClassCode:   "3A",
+		ClassNo:     3,
+		Priority:    []int{},
+		IsConfirmed: true,
+		Rank:        -1},
 }
 
 func TestStudent(t *testing.T) {
 	for i, sts := range studentList {
 		name := fmt.Sprintf("Insert %d", i)
 		t.Run(name, func(t *testing.T) {
-			if err := repo.StudentDB.Insert(&sts); err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, repo.StudentDB.Insert(&sts))
 		})
 	}
 
 	t.Run("Insert Duplicated student", func(t *testing.T) {
-		expectError("Insert Duplicated student", t, func() {
+		assert.Panic("Insert Duplicated student", t, func() {
 			s := studentList[0]
 			if err := repo.StudentDB.Insert(&s); err != nil {
 				panic(err)
@@ -36,16 +70,14 @@ func TestStudent(t *testing.T) {
 
 	t.Run("studentList_get", func(t *testing.T) {
 		students, err := repo.StudentDB.List()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.OK(t, err)
 
 		for i, got := range students {
 			want := &studentList[i]
 
 			// reset hashedPassword to un-hashed one for check the diff
 			got.Password = want.Password
-			diffTest(got, want, t)
+			assert.Equal(got, want, t)
 		}
 	})
 
@@ -58,7 +90,6 @@ func TestStudent(t *testing.T) {
 			}
 			// update the values in the student list for later checking
 			studentList[i].IsConfirmed = newValue
-			// diffTest(student, studentList[i], t)
 		})
 	}
 
@@ -73,13 +104,9 @@ func TestStudent(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			newPriority := newPriorities[i]
-
-			if err := repo.StudentDB.UpdatePriority(student.Username, newPriority); err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, repo.StudentDB.UpdatePriority(student.Username, newPriority))
 			// update the values in the student list for later checking
 			studentList[i].Priority = newPriority
-			// diffTest(s, studentList[0], t)
 		})
 	}
 
@@ -88,18 +115,17 @@ func TestStudent(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			username := s.Username
 			got, err := repo.StudentDB.Get(username)
-			if err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, err)
 
 			want := &studentList[i]
 
-			if err := bcrypt.CompareHashAndPassword([]byte(got.Password), []byte(want.Password)); err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, bcrypt.CompareHashAndPassword(
+				[]byte(got.Password),
+				[]byte(want.Password),
+			))
 
 			got.Password = want.Password
-			diffTest(got, want, t)
+			assert.Equal(got, want, t)
 		})
 	}
 }

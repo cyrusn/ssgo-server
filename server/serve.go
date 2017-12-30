@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cyrusn/ssgo/helper"
+	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/cyrusn/ssgo/server/handlers"
 	"github.com/gorilla/mux"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Serve(env handlers.Env) {
+func Serve(env *handlers.Env) {
 	r := mux.NewRouter()
 	// Routes consist of a path and a handler function.
 
@@ -24,7 +24,7 @@ func Serve(env handlers.Env) {
 	}
 
 	srv := &http.Server{
-		Handler: helper.HTTPLogger(r),
+		Handler: helper.Logger(r),
 		Addr:    "localhost" + env.Port,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,

@@ -6,6 +6,7 @@ import (
 	"github.com/cyrusn/ssgo/server/handlers"
 )
 
+// Route stores information of a route in mux
 type Route struct {
 	Path    string
 	Methods []string
@@ -13,72 +14,43 @@ type Route struct {
 	Handler func(http.ResponseWriter, *http.Request)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`{"message":"Welcome to SSGO system"}`))
-}
-
-func Routes(env handlers.Env) []Route {
+// Routes return routes by given env
+func Routes(env *handlers.Env) []Route {
 	return []Route{
 		Route{
-			"/",
-			[]string{"GET"},
-			HomeHandler,
+			Path:    "/students/",
+			Methods: []string{"GET"},
+			Handler: env.ListStudentsHandler,
 		},
 		Route{
-			"/students/{username}",
-			[]string{"GET"},
-			env.GetStudentHandler,
+			Path:    "/students/{username}",
+			Methods: []string{"GET"},
+			Handler: env.GetStudentHandler,
+		},
+		Route{
+			Path:    "/students/{username}/priority",
+			Methods: []string{"PUT"},
+			Handler: env.UpdateStudentPriorityHandler,
+		},
+		Route{
+			Path:    "/students/{username}/confirm",
+			Methods: []string{"PUT"},
+			Handler: env.UpdateStudentIsConfirmedHandler,
+		},
+		Route{
+			Path:    "/subjects/",
+			Methods: []string{"GET"},
+			Handler: env.ListSubjectsHandler,
+		},
+		Route{
+			Path:    "/subjects/{subjectCode}",
+			Methods: []string{"GET"},
+			Handler: env.GetSubjectHandler,
+		},
+		Route{
+			Path:    "/subjects/{subjectCode}/capacity",
+			Methods: []string{"PUT"},
+			Handler: env.UpdateSubjectCapacityHandler,
 		},
 	}
 }
-
-// var routes = []Routes{
-// 	Route{
-// 		"/auth/login",
-// 		[]string{"GET"},
-// 		[]string{"STUDENT", "TEACHER", "ADMIN"},
-// 		loginHandler,
-// 	},
-// 	Route{
-// 		"/auth/refresh",
-// 		[]string{"GET"},
-// 		[]string{"STUDENT", "TEACHER", "ADMIN"},
-// 		refreshHandler,
-// 	},
-// 	Route{
-// 		"/user/details",
-// 		[]string{"GET"},
-// 		[]string{"STUDENT", "TEACHER", "ADMIN"},
-// 		userDetailHandler,
-// 	},
-// 	Route{
-// 		"/student/priority",
-// 		[]string{"GET", "POST"},
-// 		[]string{"STUDENT"},
-// 		priorityHandler,
-// 	},
-// 	Route{
-// 		"/student/confirm",
-// 		[]string{"POST"},
-// 		[]string{"STUDENT"},
-// 		studentConfirmHandler
-// 	},
-// 	Route{
-// 		"/teacher/confirm/toggle/{studentID}",
-// 		[]string{"POST"},
-// 		[]string{"TEACHER", "ADMIN"},
-// 		teacherToggleConfirmHandler,
-// 	},
-// 	Route{
-// 		"/subject/capacity",
-// 		[]string{"GET", "POST"},
-// 		[]string{"ADMIN"},
-// 		capacityHandler,
-// 	},
-// 	Route{
-// 		"/subject/allocation",
-// 		[]string{"POST"},
-// 		[]string{"ADMIN"},
-// 		allocationHandler,
-// 	},
-// }

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	helper "github.com/cyrusn/goTestHelper"
+	"github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
 )
 
@@ -28,15 +28,11 @@ var testGetSubjectHandler = func(t *testing.T) {
 		resp := w.Result()
 
 		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.OK(t, err)
 
 		got := new(model.Subject)
-		if err := json.Unmarshal(body, got); err != nil {
-			t.Fatal(err)
-		}
-		helper.Diff(got, subj, t)
+		assert.OK(t, json.Unmarshal(body, got))
+		assert.Equal(got, subj, t)
 	}
 }
 
@@ -48,16 +44,12 @@ var testListSubjectsHandler = func(t *testing.T) {
 	resp := w.Result()
 
 	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.OK(t, err)
 	var got []*model.Subject
-	if err := json.Unmarshal(body, &got); err != nil {
-		t.Fatal(err)
-	}
+	assert.OK(t, json.Unmarshal(body, &got))
 
 	for i, subj := range got {
-		helper.Diff(subj, subjectList[i], t)
+		assert.Equal(subj, subjectList[i], t)
 	}
 }
 
@@ -72,6 +64,6 @@ var testUpdateSubjectCapacityHandler = func(t *testing.T) {
 	}
 
 	for _, s := range subjectList {
-		helper.Diff(s.Capacity, 20, t)
+		assert.Equal(s.Capacity, 20, t)
 	}
 }

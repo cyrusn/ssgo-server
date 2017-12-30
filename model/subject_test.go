@@ -4,32 +4,53 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
 )
 
 var subjectList = []model.Subject{
-	model.Subject{"bio", 1, "Biology", "生物", 0},
-	model.Subject{"bafs", 1, "Business, Accounting and Financial Studies", "企業、會計與財務概論", 0},
-	model.Subject{"ict", 2, "Information and Communication Technology", "資訊及通訊科技", 0},
-	model.Subject{"econ", 2, "Economics", "經濟", 0},
+	model.Subject{
+		Code:     "bio",
+		Group:    1,
+		Name:     "Biology",
+		Cname:    "生物",
+		Capacity: 0,
+	},
+	model.Subject{
+		Code:     "bafs",
+		Group:    1,
+		Name:     "Business,Accounting and Financial Studies",
+		Cname:    "企業、會計與財務概論",
+		Capacity: 0,
+	},
+	model.Subject{
+		Code:     "ict",
+		Group:    2,
+		Name:     "Information and Communication Technology",
+		Cname:    "資訊及通訊科技",
+		Capacity: 0,
+	},
+	model.Subject{
+		Code:     "econ",
+		Group:    2,
+		Name:     "Economics",
+		Cname:    "經濟",
+		Capacity: 0,
+	},
 }
 
 func TestSubject(t *testing.T) {
 	for i, s := range subjectList {
 		name := fmt.Sprintf("Insert Subject #%d", i+1)
 		t.Run(name, func(t *testing.T) {
-			if err := repo.SubjectDB.Insert(&s); err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, repo.SubjectDB.Insert(&s))
 		})
 	}
 
 	t.Run("Update Capacity", func(t *testing.T) {
 		for i, subject := range subjectList {
 			capacity := 20
-			if err := repo.SubjectDB.UpdateCapacity(subject.Code, capacity); err != nil {
-				t.Fatal(err)
-			}
+			assert.OK(t, repo.SubjectDB.UpdateCapacity(subject.Code, capacity))
 			subjectList[i].Capacity = capacity
 		}
 	})
@@ -40,21 +61,16 @@ func TestSubject(t *testing.T) {
 			want := subject
 			subjectCode := want.Code
 			s, err := repo.SubjectDB.Get(subjectCode)
-			if err != nil {
-				t.Fatal(err)
-			}
-			diffTest(&want, s, t)
+			assert.OK(t, err)
+			assert.Equal(&want, s, t)
 		})
 	}
 
 	t.Run("Get All Subjects", func(t *testing.T) {
 		subjects, err := repo.SubjectDB.List()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.OK(t, err)
 		for i, got := range subjects {
-			want := &subjectList[i]
-			diffTest(want, got, t)
+			assert.Equal(&subjectList[i], got, t)
 		}
 	})
 }

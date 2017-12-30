@@ -9,7 +9,7 @@ import (
 
 	"testing"
 
-	helper "github.com/cyrusn/goTestHelper"
+	"github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/model"
 )
 
@@ -30,16 +30,14 @@ var testGetStudent = func(t *testing.T) {
 		resp := w.Result()
 
 		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.OK(t, err)
 
 		got := new(model.Student)
 		if err := json.Unmarshal(body, got); err != nil {
 			t.Fatal(err)
 		}
 
-		helper.Diff(got, student, t)
+		assert.Equal(got, student, t)
 	}
 }
 
@@ -51,11 +49,8 @@ var testListAllStudent = func(t *testing.T) {
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
 	var got []*model.Student
-	if err := json.Unmarshal(body, &got); err != nil {
-		t.Fatal(err)
-	}
-
-	helper.Diff(got, studentList, t)
+	assert.OK(t, json.Unmarshal(body, &got))
+	assert.Equal(got, studentList, t)
 }
 
 var testUpdateStudentPriority = func(t *testing.T) {
@@ -70,7 +65,7 @@ var testUpdateStudentPriority = func(t *testing.T) {
 	}
 
 	for _, s := range studentList {
-		helper.Diff(s.Priority, []int{0, 1, 2, 3}, t)
+		assert.Equal(s.Priority, []int{0, 1, 2, 3}, t)
 	}
 }
 
@@ -84,6 +79,6 @@ var testUpdateStudentIsConfirmedHandler = func(t *testing.T) {
 		r.ServeHTTP(w, req)
 	}
 	for _, s := range studentList {
-		helper.Diff(s.IsConfirmed, true, t)
+		assert.Equal(s.IsConfirmed, true, t)
 	}
 }
