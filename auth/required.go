@@ -9,24 +9,21 @@ import (
 	"net/http"
 
 	"github.com/cyrusn/goHTTPHelper"
-
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// Required is a middleware for http.Handler that need right to access
-func Required(handler http.Handler) http.Handler {
+// Validate is a middleware which will check if jwt in request header is valid
+func Validate(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwtToken := r.Header.Get(roleKeyName)
 		if jwtToken == "" {
 			errCode := http.StatusForbidden
-			helper.PrintError(w, errors.New("Token not found"), errCode)
+			err := errors.New("Token not found")
+			helper.PrintError(w, err, errCode)
 			return
 		}
 
-		token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
-			return key, nil
-		})
-
+		token, err := jwt.Parse(jwtToken, keyFunc)
 		errCode := http.StatusUnauthorized
 		if err != nil {
 			helper.PrintError(w, err, errCode)
@@ -41,4 +38,8 @@ func Required(handler http.Handler) http.Handler {
 		}
 		helper.PrintError(w, errors.New("Invalid Token"), errCode)
 	})
+}
+
+func keyFunc(token *jwt.Token) (interface{}, error) {
+	return key, nil
 }

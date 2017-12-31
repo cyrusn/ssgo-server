@@ -9,17 +9,17 @@ type Authoriser interface {
 	Authorise(loginName, password string) error
 }
 
-func generateJWTToken(claim jwt.Claims, privateKey []byte) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	return token.SignedString(privateKey)
-}
-
-// Token return jwt token if the auth success, where claim will be stored
+// CreateToken return jwt token if the auth success, where claim will be stored
 // in jwt payload
-func Token(claim jwt.Claims, auth Authoriser, loginName, password string) (string, error) {
+func CreateToken(claim jwt.Claims, auth Authoriser, loginName, password string) (string, error) {
 	if err := auth.Authorise(loginName, password); err != nil {
 		return "", err
 	}
 
 	return generateJWTToken(claim, key)
+}
+
+func generateJWTToken(claim jwt.Claims, privateKey []byte) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	return token.SignedString(privateKey)
 }

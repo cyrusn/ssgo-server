@@ -5,12 +5,14 @@ import (
 	"errors"
 	"net/http"
 
-	helper "github.com/cyrusn/goHTTPHelper"
+	"github.com/cyrusn/goHTTPHelper"
+
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// Scope is a middleware that parse jwt in header, if value of Role in
-// jwt payload is not in scope []string, will print error message instead
+// Scope is a middleware that parse jwt in header with key "Role", if value of
+// "Role" in jwt payload is not in "scope", []string, handler then will
+// print error message instead
 func Scope(scope []string, handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusUnauthorized

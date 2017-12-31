@@ -11,8 +11,8 @@ var (
 )
 
 // SetPrivateKey set the privateKey for authentication
-func SetPrivateKey(newKey []byte) {
-	key = newKey
+func SetPrivateKey(newKey string) {
+	key = []byte(newKey)
 }
 
 // SetContextKey set the name of ContextKeyClaim
