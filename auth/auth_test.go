@@ -1,75 +1,31 @@
 package auth_test
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
-	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/cyrusn/goTestHelper"
 	"github.com/cyrusn/ssgo/auth"
+
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 )
 
-type User struct {
-	Username string
-	Role     string
-	Password string
-}
+const roleKeyName = "kid"
 
-type Credential struct {
-	Username string
-	Password string
-}
-
-type TestModel struct {
-	Name string
-	*User
-	*Credential
-}
-
-var testModels = []*TestModel{
-	&TestModel{
-		Name: "Success Case",
-		User: &User{
-			Username: "lpteacher1",
-			Password: "abc123",
-			Role:     "TEACHER",
-		},
-		Credential: &Credential{
-			Username: "lpteacher1",
-			Password: "abc123",
-		},
-	},
-	&TestModel{
-		Name: "Incorrect Login",
-		User: &User{
-			Username: "lpstudent1",
-			Password: "def456",
-			Role:     "STUDENT",
-		},
-		Credential: &Credential{
-			Username: "lpstudent1",
-			Password: "def123",
-		},
-	},
-	&TestModel{
-		Name: "Forbidden Role",
-		User: &User{
-			Username: "lpstudent2",
-			Password: "ghi789",
-			Role:     "STUDENT",
-		},
-		Credential: &Credential{
-			Username: "lpstudent2",
-			Password: "ghi789",
-		},
-	},
-}
+var (
+	r               = mux.NewRouter()
+	expireToken     = time.Now().Add(time.Minute * 30).Unix()
+	privateKey      = []byte("hello world")
+	tokens          = []string{}
+	authorizedRoles = []string{"TEACHER"}
+)
 
 func (m *TestModel) Authorise(username, password string) error {
 	for _, m := range testModels {
@@ -80,87 +36,83 @@ func (m *TestModel) Authorise(username, password string) error {
 	return errors.New("Unauthorised")
 }
 
-type payload struct {
-	Username string
-	Role     string
-}
-
-const (
-	AuthorizedRole = "TEACHER"
-)
-
-var (
-	privateKey = []byte("hello world")
-	tokens     = []string{}
-)
-
 func init() {
 	auth.SetPrivateKey(privateKey)
+	auth.SetContextKey("myContextClaim")
+	auth.SetRoleKeyName(roleKeyName)
+
+	for _, ro := range routes {
+		handler := http.HandlerFunc(ro.handler)
+
+		if len(ro.roles) != 0 {
+			handler = auth.Scope(ro.roles, handler).(http.HandlerFunc)
+		}
+
+		if ro.auth {
+			handler = auth.Required(handler).(http.HandlerFunc)
+		}
+		r.Handle(ro.path, handler)
+	}
 }
 
 func TestMain(t *testing.T) {
-	expireToken := time.Now().Add(time.Minute * 30).Unix()
-	handler := http.HandlerFunc(simpleHandler)
+	t.Run("test 1st route", testRoute1)
+	t.Run("test 2nd route", testRoute2)
+}
+
+var testRoute2 = func(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/basic/", nil)
+	r.ServeHTTP(w, req)
+
+	resp := w.Result()
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.OK(t, err)
+	assert.Equal(string(body), "secret message", t)
+}
+
+type myClaims struct {
+	Username string
+	Role     string
+	jwt.StandardClaims
+}
+
+var testRoute1 = func(t *testing.T) {
 	for _, m := range testModels {
 		t.Run(m.Name, func(t *testing.T) {
+			token := ""
+			t.Run("login", func(t *testing.T) {
+				loginWriter := httptest.NewRecorder()
+				formString := fmt.Sprintf(`{"Username":"%s", "Password":"%s"}`, m.User.Username, m.User.Password)
+				postForm := strings.NewReader(formString)
+				loginReq := httptest.NewRequest("POST", "/login/", postForm)
+				loginReq.Header.Set("Content-Type", "application/json")
+				r.ServeHTTP(loginWriter, loginReq)
 
-			claim := auth.Claim{
-				Payload: payload{Username: m.User.Username, Role: m.User.Role},
-				StandardClaims: jwt.StandardClaims{
-					ExpiresAt: expireToken,
-				},
-			}
-			password := m.Credential.Password
-			token, err := claim.GetToken(m, m.User.Username, password)
-
-			if m.User.Password == password {
+				loginResp := loginWriter.Result()
+				tokenBytes, err := ioutil.ReadAll(loginResp.Body)
 				assert.OK(t, err)
-			} else {
-				assert.Panic("Fail to login", t, func() {
-					panic(err)
-				})
-			}
-			w := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/auth/", nil)
-			req.Header.Set("jwt-token", token)
-			authorizedHandler := auth.Required(handler)
-			authorizedHandler.ServeHTTP(w, req)
-			resp := w.Result()
-			body, err := ioutil.ReadAll(resp.Body)
-			assert.OK(t, err)
+				token = string(tokenBytes)
+			})
 
-			if m.User.Role == AuthorizedRole {
-				assert.Equal(string(body), "secret message", t)
-			} else {
-				assert.NotEqual(string(body), "secret message", t)
-			}
+			t.Run("test 3rd route", func(t *testing.T) {
+				w := httptest.NewRecorder()
+				req := httptest.NewRequest("GET", "/auth/", nil)
+				req.Header.Set(roleKeyName, token)
+				r.ServeHTTP(w, req)
+
+				resp := w.Result()
+				body, err := ioutil.ReadAll(resp.Body)
+				assert.OK(t, err)
+
+				if m.User.Password == m.Credential.Password && in(m.User.Role, authorizedRoles) {
+					assert.Equal(string(body), "secret message", t)
+				} else {
+					assert.Panic(m.Name, t, func() {
+						panic(string(body))
+					})
+				}
+			})
 		})
 	}
-}
-
-func parseRole(ctx context.Context) (string, error) {
-	m := ctx.Value(auth.ContextKeyClaim).(jwt.MapClaims)
-	payload, ok := m["Payload"].(map[string]interface{})
-	if !ok {
-		return "", errors.New("Claim not found in context")
-	}
-
-	result, ok := payload["Role"].(string)
-	if !ok {
-		return "", errors.New("Invalid payload")
-	}
-	return result, nil
-}
-
-func simpleHandler(w http.ResponseWriter, r *http.Request) {
-	errCode := http.StatusUnauthorized
-	role, err := parseRole(r.Context())
-	if err != nil {
-		helper.PrintError(w, err, errCode)
-	}
-	if role == AuthorizedRole {
-		w.Write([]byte("secret message"))
-		return
-	}
-	helper.PrintError(w, errors.New("User not allow"), errCode)
 }
