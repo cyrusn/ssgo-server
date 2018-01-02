@@ -35,7 +35,7 @@ func parseRoleInContext(ctx context.Context) (string, error) {
 		return "", errors.New("Claim not found in context")
 	}
 	m := claim.(jwt.MapClaims)
-	result, ok := m["Role"].(string)
+	result, ok := m[roleKeyName].(string)
 	if !ok {
 		return "", errors.New("Role not found in context")
 	}

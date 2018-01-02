@@ -16,7 +16,7 @@ func CreateToken(claim jwt.Claims, auth Authoriser, loginName, password string) 
 		return "", err
 	}
 
-	return generateJWTToken(claim, key)
+	return generateJWTToken(claim, privateKey)
 }
 
 func generateJWTToken(claim jwt.Claims, privateKey []byte) (string, error) {

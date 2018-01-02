@@ -15,7 +15,7 @@ import (
 // Validate is a middleware which will check if jwt in request header is valid
 func Validate(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		jwtToken := r.Header.Get(roleKeyName)
+		jwtToken := r.Header.Get(jwtKeyName)
 		if jwtToken == "" {
 			errCode := http.StatusForbidden
 			err := errors.New("Token not found")
@@ -41,5 +41,5 @@ func Validate(handler http.Handler) http.Handler {
 }
 
 func keyFunc(token *jwt.Token) (interface{}, error) {
-	return key, nil
+	return privateKey, nil
 }

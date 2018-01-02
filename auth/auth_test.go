@@ -108,7 +108,8 @@ var testRoutes = []route{
 }
 
 const (
-	roleKeyName      = "kid"
+	roleKeyName      = "Role"
+	jwtKeyName       = "jwt-token"
 	contextClaimName = "myClaim"
 	privateKey       = "hello world"
 )
@@ -133,6 +134,7 @@ func init() {
 	auth.SetPrivateKey(privateKey)
 	auth.SetContextKey(contextClaimName)
 	auth.SetRoleKeyName(roleKeyName)
+	auth.SetJWTKeyName(jwtKeyName)
 
 	for _, ro := range testRoutes {
 		handler := http.HandlerFunc(ro.handler)
@@ -190,7 +192,7 @@ var testRoute1 = func(t *testing.T) {
 			t.Run("test 3rd route", func(t *testing.T) {
 				w := httptest.NewRecorder()
 				req := httptest.NewRequest("GET", "/auth/", nil)
-				req.Header.Set(roleKeyName, token)
+				req.Header.Set(jwtKeyName, token)
 				r.ServeHTTP(w, req)
 
 				resp := w.Result()
