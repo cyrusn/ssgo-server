@@ -78,7 +78,7 @@ var testModels = []*TestModel{
 type route struct {
 	path    string
 	auth    bool
-	roles   []string
+	scopes  []string
 	method  string
 	handler func(http.ResponseWriter, *http.Request)
 }
@@ -87,29 +87,28 @@ var testRoutes = []route{
 	route{
 		path:    "/login/",
 		auth:    false,
-		roles:   []string{},
+		scopes:  []string{},
 		method:  "GET",
 		handler: loginHandler,
 	},
 	route{
 		path:    "/auth/",
 		auth:    true,
-		roles:   authorizedRoles,
+		scopes:  authorizedRoles,
 		method:  "GET",
 		handler: simpleHandler,
 	},
 	route{
 		path:    "/basic/",
 		auth:    false,
-		roles:   []string{},
+		scopes:  []string{},
 		method:  "GET",
 		handler: simpleHandler,
 	},
 }
 
 const (
-	roleKeyName      = "Role"
-	jwtKeyName       = "jwt-token"
+	jwtKeyName       = "kid"
 	contextClaimName = "myClaim"
 	privateKey       = "hello world"
 )
@@ -132,15 +131,14 @@ func (m *TestModel) Authorise(username, password string) error {
 
 func init() {
 	auth.SetPrivateKey(privateKey)
-	auth.SetContextKey(contextClaimName)
-	auth.SetRoleKeyName(roleKeyName)
+	auth.SetContextKeyName(contextClaimName)
 	auth.SetJWTKeyName(jwtKeyName)
 
 	for _, ro := range testRoutes {
 		handler := http.HandlerFunc(ro.handler)
 
-		if len(ro.roles) != 0 {
-			handler = auth.Scope(ro.roles, handler).(http.HandlerFunc)
+		if len(ro.scopes) != 0 {
+			handler = auth.Scope(ro.scopes, handler).(http.HandlerFunc)
 		}
 
 		if ro.auth {

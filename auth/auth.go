@@ -4,10 +4,11 @@ type contextKey string
 
 var (
 	privateKey = []byte("secret")
-	// contextKeyClaim is the key in context for retreive the information of claim
+	// contextKeyClaim is the keyName in http.Context which store information
+	// jwt.Claims
 	contextKeyName = contextKey("context-claims")
-	roleKeyName    = "Role"
 	jwtKeyName     = "jwt-token"
+	roleKeyName    = "Role"
 )
 
 // SetPrivateKey set the privateKey for authentication
@@ -16,18 +17,21 @@ func SetPrivateKey(key string) {
 	privateKey = []byte(key)
 }
 
-// SetContextKey set the name of ContextKeyClaim
+// SetContextKeyName set the name of ContextKeyClaim,
 // the default value of contextKey is "context-claims"
-func SetContextKey(name string) {
+func SetContextKeyName(name string) {
 	contextKeyName = contextKey(name)
 }
 
-// SetRoleKeyName set the name of Role in jwt payload
-// the default value of roleKey is "context-claims"
-func SetRoleKeyName(name string) {
-	roleKeyName = name
-}
-
+// SetJWTKeyName set the name of Role in jwt payload,
+// the default value of roleKey is "jwt-token"
 func SetJWTKeyName(name string) {
 	jwtKeyName = name
+}
+
+// SetRoleKeyName declares rolekeyName in jwt.Claims. auth package will
+// get the value with the key named by rolekeyName to valdate the scope
+// of authentication, the default value of roleKeyname is "Role"
+func SetRoleKeyName(name string) {
+	roleKeyName = name
 }
