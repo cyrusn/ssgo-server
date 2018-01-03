@@ -11,6 +11,7 @@ import (
 
 // StudentStore stores the interface for handler that query information about model.Student
 type StudentStore interface {
+	Authenticate(username, password string) error
 	Get(username string) (*model.Student, error)
 	List() ([]*model.Student, error)
 	UpdatePriority(username string, priority []int) error

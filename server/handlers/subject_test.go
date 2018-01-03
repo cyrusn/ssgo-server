@@ -3,7 +3,6 @@ package handlers_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -12,23 +11,15 @@ import (
 	"github.com/cyrusn/ssgo/model"
 )
 
-func TestSubjectHandler(t *testing.T) {
-	t.Run("Get Subject", testGetSubjectHandler)
-	t.Run("List Subjects", testListSubjectsHandler)
-	t.Run("Update Subject Capacity", testUpdateSubjectCapacityHandler)
-}
-
 var testGetSubjectHandler = func(t *testing.T) {
 	for _, subj := range subjectList {
 		url := fmt.Sprintf("/subjects/%s", subj.Code)
 		w := httptest.NewRecorder()
 		req := httptest.NewRequest("GET", url, nil)
+		addJWT2Header(teacherList[0].Username, req)
 		r.ServeHTTP(w, req)
 
-		resp := w.Result()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		assert.OK(t, err)
+		body := parseBody(w, t)
 
 		got := new(model.Subject)
 		assert.OK(t, json.Unmarshal(body, got))
@@ -39,12 +30,11 @@ var testGetSubjectHandler = func(t *testing.T) {
 var testListSubjectsHandler = func(t *testing.T) {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/subjects/", nil)
+	addJWT2Header(teacherList[0].Username, req)
 	r.ServeHTTP(w, req)
 
-	resp := w.Result()
+	body := parseBody(w, t)
 
-	body, err := ioutil.ReadAll(resp.Body)
-	assert.OK(t, err)
 	var got []*model.Subject
 	assert.OK(t, json.Unmarshal(body, &got))
 
@@ -59,6 +49,8 @@ var testUpdateSubjectCapacityHandler = func(t *testing.T) {
 		url := fmt.Sprintf("/subjects/%s/capacity", subj.Code)
 		form := strings.NewReader(`{"capacity":20}`)
 		req := httptest.NewRequest("PUT", url, form)
+
+		addJWT2Header(teacherList[0].Username, req)
 		req.Header.Set("Content-Type", "application/json")
 		r.ServeHTTP(w, req)
 	}

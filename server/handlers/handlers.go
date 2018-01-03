@@ -12,4 +12,5 @@ type Env struct {
 	Port string
 	StudentStore
 	SubjectStore
+	TeacherStore
 }
