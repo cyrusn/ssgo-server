@@ -43,3 +43,15 @@ var testTeacherLogin = func(t *testing.T) {
 		mapToken[teacher.Username] = string(body)
 	}
 }
+
+var testRefresh = func(t *testing.T) {
+	for _, s := range studentList {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/auth/refresh/", nil)
+		addJWT2Header(s.Username, req)
+		r.ServeHTTP(w, req)
+		body := parseBody(w, t)
+		mapToken[s.Username] = string(body)
+		// TODO: write a better to test the refreshed mapToken
+	}
+}

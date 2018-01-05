@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/cyrusn/ssgo/model"
-	"github.com/cyrusn/ssgo/server"
 	"github.com/cyrusn/ssgo/server/handlers"
 
 	auth "github.com/cyrusn/goJWTAuthHelper"
@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	routes       = server.Routes(env)
+	routes       = handlers.Routes(env)
 	r            = mux.NewRouter()
 	studentStore = &MockStudentStore{studentList}
 	sujectStore  = &MockSubjectStore{subjectList}
@@ -35,6 +35,7 @@ func init() {
 	auth.SetPrivateKey(privateKey)
 	auth.SetJWTKeyName(jwtKey)
 	auth.SetContextKeyName(contextClaimKey)
+	handlers.SetExpireTime(time.Duration(5) * time.Second)
 
 	for _, route := range routes {
 		handler := http.HandlerFunc(route.Handler)
@@ -54,6 +55,7 @@ func init() {
 func TestMain(t *testing.T) {
 	t.Run("Student Login", testStudentLogin)
 	t.Run("Teacher login", testTeacherLogin)
+	t.Run("Refresh Student token", testRefresh)
 
 	t.Run("Get Student", testGetStudent)
 	t.Run("List all students", testListAllStudent)

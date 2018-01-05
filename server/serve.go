@@ -7,20 +7,29 @@ import (
 	"time"
 
 	helper "github.com/cyrusn/goHTTPHelper"
+	auth "github.com/cyrusn/goJWTAuthHelper"
 	"github.com/cyrusn/ssgo/server/handlers"
 	"github.com/gorilla/mux"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Serve serve the routers
 func Serve(env *handlers.Env) {
 	r := mux.NewRouter()
 	// Routes consist of a path and a handler function.
 
-	for _, route := range Routes(env) {
-		r.Methods(route.Methods...).
-			Path(route.Path).
-			HandlerFunc(route.Handler)
+	for _, route := range handlers.Routes(env) {
+		r1 := r.Methods(route.Methods...).
+			Path(route.Path)
+
+		if route.Auth {
+			handler := http.HandlerFunc(route.Handler)
+			r1 = r1.Handler(auth.Validate(handler))
+		} else {
+			r1 = r1.HandlerFunc(route.Handler)
+		}
+
 	}
 
 	srv := &http.Server{

@@ -16,12 +16,14 @@ var teachers = []model.Teacher{
 		Username: "lpteacher1",
 		Password: "password1",
 		Name:     "Alice Li",
-		Cname:    "李麗絲"},
+		Cname:    "李麗絲",
+	},
 	model.Teacher{
 		Username: "lpteacher2",
 		Password: "password2",
 		Name:     "Bob Li",
-		Cname:    "李鮑伯"},
+		Cname:    "李鮑伯",
+	},
 }
 
 func TestTeacher(t *testing.T) {
