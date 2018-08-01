@@ -14,7 +14,8 @@
 .glide/
 
 # Custom
-/data
-/test
+/data/*
+/test/*
+/public/*
 
 *.db
