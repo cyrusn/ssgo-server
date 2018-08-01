@@ -52,7 +52,7 @@ func (env *Env) Routes() []Route {
 		Route{
 			Path:    "/student/{userAlias}",
 			Methods: []string{"GET"},
-			Scopes:  []string{"STUDENT"},
+			Scopes:  []string{},
 			Auth:    true,
 			Handler: student.GetHandler(env.Student),
 		},
@@ -60,23 +60,31 @@ func (env *Env) Routes() []Route {
 			// update student's priority
 			Path:    "/student/{userAlias}/priority",
 			Methods: []string{"PUT"},
-			Scopes:  []string{"STUDENT", "TEACHER"},
+			Scopes:  []string{"STUDENT"},
 			Auth:    true,
 			Handler: student.UpdatePriorityHandler(env.Student),
 		},
 		Route{
 			// toggle student's isConfirm value
-			Path:    "/student/{userAlias}/isconfirmed/{isconfirmed}",
+			Path:    "/student/{userAlias}/isconfirmed/true",
 			Methods: []string{"PUT"},
 			Scopes:  []string{"STUDENT", "TEACHER"},
 			Auth:    true,
-			Handler: student.UpdateIsConfirmedHandler(env.Student),
+			Handler: student.ConfirmedHandler(env.Student),
+		},
+		Route{
+			// toggle student's isConfirm value
+			Path:    "/student/{userAlias}/isconfirmed/false",
+			Methods: []string{"PUT"},
+			Scopes:  []string{"TEACHER"},
+			Auth:    true,
+			Handler: student.UnconfirmedHandler(env.Student),
 		},
 		Route{
 			// toggle student's isConfirm value
 			Path:    "/student/{userAlias}/rank/{rank}",
 			Methods: []string{"PUT"},
-			Scopes:  []string{"STUDENT", "TEACHER"},
+			Scopes:  []string{"TEACHER"},
 			Auth:    true,
 			Handler: student.UpdateRankHandler(env.Student),
 		},

@@ -79,18 +79,22 @@ func UpdatePriorityHandler(store Store) func(http.ResponseWriter, *http.Request)
 	}
 }
 
-// UpdateIsConfirmedHandler update IsConfirmed status of student
-func UpdateIsConfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
+// ConfirmHandler update IsConfirmed status of student
+func ConfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
+	return confirmHandlerBuilder(store, true)
+}
+
+// UnconfirmHandler update IsConfirmed status of student
+func UnconfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
+	return confirmHandlerBuilder(store, false)
+}
+
+func confirmHandlerBuilder(store Store, b bool) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusBadRequest
 		userAlias := mux.Vars(r)["userAlias"]
-		isConfirmed, err := strconv.ParseBool(mux.Vars(r)["isconfirmed"])
-		if err != nil {
-			helper.PrintError(w, err, errCode)
-			return
-		}
 
-		if err := store.UpdateIsConfirmed(userAlias, isConfirmed); err != nil {
+		if err := store.UpdateIsConfirmed(userAlias, b); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}
