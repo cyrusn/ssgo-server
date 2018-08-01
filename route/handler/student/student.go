@@ -15,6 +15,7 @@ import (
 type Store interface {
 	Get(userAlias string) (*student.Student, error)
 	List() ([]*student.Student, error)
+	UpdateRank(userAlias string, rank int) error
 	UpdatePriority(userAlias string, priority []int) error
 	UpdateIsConfirmed(userAlias string, isConfirmed bool) error
 }
@@ -90,6 +91,25 @@ func UpdateIsConfirmedHandler(store Store) func(http.ResponseWriter, *http.Reque
 		}
 
 		if err := store.UpdateIsConfirmed(userAlias, isConfirmed); err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+		w.Write(nil)
+	}
+}
+
+// UpdateRankHandler update Rank of student
+func UpdateRankHandler(store Store) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		errCode := http.StatusBadRequest
+		userAlias := mux.Vars(r)["userAlias"]
+		rank, err := strconv.Atoi(mux.Vars(r)["rank"])
+		if err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+
+		if err := store.UpdateRank(userAlias, rank); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}

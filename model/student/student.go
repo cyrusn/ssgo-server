@@ -74,6 +74,16 @@ func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 	return err
 }
 
+// UpdateRank will update student's isConfirmed.
+func (db *DB) UpdateRank(userAlias string, rank int) error {
+	_, err := db.Exec(
+		"UPDATE student set rank = ? WHERE userAlias = ?",
+		rank,
+		userAlias,
+	)
+	return err
+}
+
 // Get query student by userAlias.
 func (db *DB) Get(userAlias string) (*Student, error) {
 	s := new(Student)

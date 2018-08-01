@@ -73,6 +73,14 @@ func (env *Env) Routes() []Route {
 			Handler: student.UpdateIsConfirmedHandler(env.Student),
 		},
 		Route{
+			// toggle student's isConfirm value
+			Path:    "/student/{userAlias}/rank/{rank}",
+			Methods: []string{"PUT"},
+			Scopes:  []string{"STUDENT", "TEACHER"},
+			Auth:    true,
+			Handler: student.UpdateRankHandler(env.Student),
+		},
+		Route{
 			// list all subjects information
 			Path:    "/subjects",
 			Methods: []string{"GET"},
@@ -82,7 +90,7 @@ func (env *Env) Routes() []Route {
 		},
 		Route{
 			// update subject's capacity
-			Path:    "/subjects/{subjectCode}/capacity/{capacity}",
+			Path:    "/subject/{subjectCode}/capacity/{capacity}",
 			Methods: []string{"PUT"},
 			Scopes:  []string{"TEACHER"},
 			Auth:    true,
