@@ -24,7 +24,7 @@ var importCmd = &cobra.Command{
 
 var teacherCmd = &cobra.Command{
 	Use:   "teacher",
-	Short: "Import teacher users to Credential table in database",
+	Short: "Import teachers to Credential table in database",
 	Run: func(cmd *cobra.Command, args []string) {
 		var credentials []auth.Credential
 
@@ -70,7 +70,7 @@ var subjectCmd = &cobra.Command{
 
 var studentCmd = &cobra.Command{
 	Use:   "student",
-	Short: "Import student users to Credential and Student table in database",
+	Short: "Import students to Credential and Student table in database",
 	Run: func(cmd *cobra.Command, args []string) {
 		var students []student.Student
 		var credentials []auth.Credential

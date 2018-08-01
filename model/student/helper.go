@@ -12,8 +12,6 @@ func (s *Student) scanStudent(v interface{}) error {
 
 	var args = []interface{}{
 		&s.UserAlias,
-		&s.ClassCode,
-		&s.ClassNo,
 		&priority,
 		&isConfirmed,
 		&s.Rank,

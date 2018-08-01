@@ -12,8 +12,6 @@ type DB struct {
 // Student stores information for student user.
 type Student struct {
 	UserAlias   string
-	ClassCode   string
-	ClassNo     int
 	Priority    []int
 	IsConfirmed bool
 	Rank        int
@@ -29,15 +27,11 @@ func (db *DB) Insert(s *Student) error {
 	_, err = db.Exec(
 		`INSERT INTO student (
 			userAlias,
-			classcode,
-			classno,
 			priority,
 			isConfirmed,
 			rank
-		) values (?, ?, ?, ?, ?, ?)`,
+		) values (?, ?, ?, ?)`,
 		s.UserAlias,
-		s.ClassCode,
-		s.ClassNo,
 		bPriority,
 		convertBool2Int(s.IsConfirmed),
 		s.Rank,
