@@ -2,8 +2,6 @@
 
 - an subject-selection web api
 
-
-
 # Feature
 ## startup
 There are only teacher and student user, *admin* are the one who do the setup of the programme. The setup setup step include the following:
@@ -30,7 +28,6 @@ Once the programme server started, student and teacher user can login to system,
 - [spf13/cobra: A Commander for modern Go CLI interactions](https://github.com/spf13/cobra/)
 - [Practical Persistence in Go: Organising Database Access](http://www.alexedwards.net/blog/organising-database-access)
 - [Practical Persistence in Go: SQL Databases](http://www.alexedwards.net/blog/practical-persistence-sql)
-
 
 
 # How to use this application
@@ -75,7 +72,6 @@ rank="./data/rank.json"
   "classNo": 1
 }]
 ```
-
 
 # setup event
 - update all field in `config.toml`

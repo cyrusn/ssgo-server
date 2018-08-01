@@ -15,6 +15,6 @@
 
 # Custom
 /data
-/database
+/test
 
 *.db

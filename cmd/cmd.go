@@ -8,24 +8,30 @@ import (
 )
 
 const (
-	TEACHER_JSON_PATH = "./data/teacher.json"
-	STUDENT_JSON_PATH = "./data/student.json"
-	SUBJECT_JSON_PATH = "./data/subject.json"
-	DB_PATH           = "./test/test.db"
-	CONTEXT_KEY_NAME  = "authClaim"
-	JWT_KEY_NAME      = "jwt"
-	ROLE_KEY_NAME     = "Role"
-	PRIVATE_KEY       = "skill-vein-planet-neigh-envoi"
+	TEACHER_JSON_PATH      = "./data/teacher.json"
+	STUDENT_JSON_PATH      = "./data/student.json"
+	SUBJECT_JSON_PATH      = "./data/subject.json"
+	DB_PATH                = "./test/test.db"
+	CONTEXT_KEY_NAME       = "authClaim"
+	JWT_KEY_NAME           = "jwt"
+	ROLE_KEY_NAME          = "Role"
+	PRIVATE_KEY            = "skill-vein-planet-neigh-envoi"
+	DEFAULT_PORT           = ":5000"
+	STATIC_FOLDER_LOCATION = "./public"
+	DEFAULT_LIFE_TIME      = 30
 )
 
 var (
-	secret          auth.Secret
-	teacherJSONPath string
-	studentJSONPath string
-	subjectJSONPath string
-	dbPath          string
-	isOverwrite     bool
-	privateKey      string
+	secret               auth.Secret
+	port                 string
+	staticFolderLocation string
+	teacherJSONPath      string
+	studentJSONPath      string
+	subjectJSONPath      string
+	dbPath               string
+	isOverwrite          bool
+	privateKey           string
+	lifeTime             int64
 
 	rootCmd = &cobra.Command{
 		Use:   "ssgo",
@@ -49,6 +55,7 @@ func init() {
 		versionCmd,
 		createCmd,
 		importCmd,
+		serveCmd,
 	}
 
 	for _, cmd := range cmds {
@@ -111,6 +118,28 @@ func init() {
 		"s",
 		SUBJECT_JSON_PATH,
 		"path of subject.json file\nplease check README.md for the schema",
+	)
+
+	serveCmd.PersistentFlags().StringVarP(
+		&port,
+		"port",
+		"p",
+		DEFAULT_PORT,
+		"port value",
+	)
+	serveCmd.PersistentFlags().StringVarP(
+		&staticFolderLocation,
+		"static",
+		"s",
+		STATIC_FOLDER_LOCATION,
+		"location of static folder for serving",
+	)
+	serveCmd.PersistentFlags().Int64VarP(
+		&lifeTime,
+		"time",
+		"t",
+		DEFAULT_LIFE_TIME,
+		"update the life time (minutes) of jwt",
 	)
 }
 

@@ -125,7 +125,7 @@ func unmarshalJSON(jsonFilePath string, v interface{}) {
 }
 
 func readJSONFile(jsonFilePath string) []byte {
-	file, err := ioutil.readJSONFile(jsonFilePath)
+	file, err := ioutil.ReadFile(jsonFilePath)
 	if err != nil {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
