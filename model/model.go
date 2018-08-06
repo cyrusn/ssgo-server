@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS Student (
 const subjectTableSchema = `
 CREATE TABLE IF NOT EXISTS Subject (
   code TEXT PRIMARY KEY,
-  gp INTEGER NOT NULL,
   capacity INTEGER DEFAULT -1
 );`
 

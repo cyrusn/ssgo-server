@@ -79,12 +79,12 @@ func UpdatePriorityHandler(store Store) func(http.ResponseWriter, *http.Request)
 	}
 }
 
-// ConfirmHandler update IsConfirmed status of student
+// ConfirmedHandler update IsConfirmed status of student
 func ConfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	return confirmHandlerBuilder(store, true)
 }
 
-// UnconfirmHandler update IsConfirmed status of student
+// UnconfirmedHandler update IsConfirmed status of student
 func UnconfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	return confirmHandlerBuilder(store, false)
 }

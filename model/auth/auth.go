@@ -27,9 +27,9 @@ type DB struct {
 }
 
 type Credential struct {
-	UserAlias string
-	Password  string
-	Role      string
+	UserAlias string `json:"userAlias"`
+	Password  string `json:"password"`
+	Role      string `json:"role"`
 }
 
 // Claims is jwt.Claims for authentication credential

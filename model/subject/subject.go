@@ -9,21 +9,20 @@ type DB struct {
 // Subject store subject's information. The capacity of subject is the
 // quota that student can be enrolled in.
 type Subject struct {
-	Code     string
-	Group    int
-	Capacity int
+	Code     string `json:"code"`
+	Capacity int    `json:"capacity"`
 }
 
 // Insert insert subject information to database
 func (db *DB) Insert(s *Subject) error {
 	_, err := db.Exec(`
     INSERT INTO subject (
-      code, gp, capacity
+      code, capacity
     ) values (
-      ?, ?, ?
+      ?, ?
     )
     `,
-		s.Code, s.Group, s.Capacity,
+		s.Code, s.Capacity,
 	)
 	return err
 }
@@ -35,7 +34,7 @@ func (db *DB) Get(subjectCode string) (*Subject, error) {
 		subjectCode,
 	)
 	s := new(Subject)
-	if err := row.Scan(&s.Code, &s.Group, &s.Capacity); err != nil {
+	if err := row.Scan(&s.Code, &s.Capacity); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +54,7 @@ func (db *DB) List() ([]*Subject, error) {
 	for rows.Next() {
 		s := new(Subject)
 		if err := rows.Scan(
-			&s.Code, &s.Group, &s.Capacity,
+			&s.Code, &s.Capacity,
 		); err != nil {
 			return nil, err
 		}

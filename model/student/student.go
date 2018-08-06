@@ -11,10 +11,10 @@ type DB struct {
 
 // Student stores information for student user.
 type Student struct {
-	UserAlias   string
-	Priority    []int
-	IsConfirmed bool
-	Rank        int
+	UserAlias   string `json:"userAlias"`
+	Priority    []int  `json:"priority"`
+	IsConfirmed bool   `json:"isConfirmed"`
+	Rank        int    `json:"rank"`
 }
 
 // Insert add new student to database.

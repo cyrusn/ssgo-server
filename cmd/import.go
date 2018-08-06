@@ -35,7 +35,6 @@ var teacherCmd = &cobra.Command{
 		defer db.Close()
 
 		for _, c := range credentials {
-			c.Role = "TEACHER"
 			if err := db.Insert(&c); err != nil {
 				fmt.Printf("Import error: %v\n", err)
 				os.Exit(1)
@@ -49,15 +48,16 @@ var subjectCmd = &cobra.Command{
 	Use:   "subject",
 	Short: "Import subjects to Subject table in database",
 	Run: func(cmd *cobra.Command, args []string) {
-		var subjects []subject.Subject
+		var codes []string
 
 		checkPathExist(dbPath, subjectJSONPath)
-		unmarshalJSON(subjectJSONPath, &subjects)
+		unmarshalJSON(subjectJSONPath, &codes)
 
 		db := &subject.DB{openDB(dbPath)}
 		defer db.Close()
 
-		for _, s := range subjects {
+		for _, c := range codes {
+			s := subject.Subject{Code: c}
 			if err := db.Insert(&s); err != nil {
 				fmt.Printf("Import error: %v\n", err)
 				os.Exit(1)
