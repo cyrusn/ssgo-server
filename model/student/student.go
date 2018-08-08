@@ -12,14 +12,14 @@ type DB struct {
 // Student stores information for student user.
 type Student struct {
 	UserAlias   string `json:"userAlias"`
-	Priority    []int  `json:"priority"`
+	Priorities  []int  `json:"priorities"`
 	IsConfirmed bool   `json:"isConfirmed"`
 	Rank        int    `json:"rank"`
 }
 
 // Insert add new student to database.
 func (db *DB) Insert(s *Student) error {
-	bPriority, err := json.Marshal(s.Priority)
+	bPriorities, err := json.Marshal(s.Priorities)
 	if err != nil {
 		return err
 	}
@@ -27,12 +27,12 @@ func (db *DB) Insert(s *Student) error {
 	_, err = db.Exec(
 		`INSERT INTO student (
 			userAlias,
-			priority,
+			priorities,
 			isConfirmed,
 			rank
 		) values (?, ?, ?, ?)`,
 		s.UserAlias,
-		bPriority,
+		bPriorities,
 		convertBool2Int(s.IsConfirmed),
 		s.Rank,
 	)
@@ -43,16 +43,16 @@ func (db *DB) Insert(s *Student) error {
 	return nil
 }
 
-// UpdatePriority will update student's priority.
-func (db *DB) UpdatePriority(userAlias string, priority []int) error {
-	bPriority, err := json.Marshal(priority)
+// UpdatePriorities will update student's priorities.
+func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
+	bPriorities, err := json.Marshal(priorities)
 	if err != nil {
 		return err
 	}
 
 	_, err = db.Exec(
-		"UPDATE student set priority = ? WHERE userAlias = ?",
-		bPriority,
+		"UPDATE student set priorities = ? WHERE (userAlias = ? and isConfirmed = false)",
+		bPriorities,
 		userAlias,
 	)
 	return err

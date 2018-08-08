@@ -57,12 +57,12 @@ func (env *Env) Routes() []Route {
 			Handler: student.GetHandler(env.Student),
 		},
 		Route{
-			// update student's priority
-			Path:    "/student/{userAlias}/priority",
+			// update student's priorities
+			Path:    "/student/{userAlias}/priorities",
 			Methods: []string{"PUT"},
 			Scopes:  []string{"STUDENT"},
 			Auth:    true,
-			Handler: student.UpdatePriorityHandler(env.Student),
+			Handler: student.UpdatePrioritiesHandler(env.Student),
 		},
 		Route{
 			// set student's isConfirmed value to true

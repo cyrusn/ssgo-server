@@ -94,7 +94,7 @@ var studentCmd = &cobra.Command{
 		}
 
 		for _, s := range students {
-			s.Priority = []int{}
+			s.Priorities = []int{}
 			s.IsConfirmed = false
 			s.Rank = -1
 

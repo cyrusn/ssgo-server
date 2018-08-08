@@ -6,13 +6,13 @@ import (
 )
 
 func (s *Student) scanStudent(v interface{}) error {
-	var priority []byte
+	var priorities []byte
 	var isConfirmed int
 	var err error
 
 	var args = []interface{}{
 		&s.UserAlias,
-		&priority,
+		&priorities,
 		&isConfirmed,
 		&s.Rank,
 	}
@@ -28,7 +28,7 @@ func (s *Student) scanStudent(v interface{}) error {
 		return err
 	}
 
-	if err := json.Unmarshal(priority, &s.Priority); err != nil {
+	if err := json.Unmarshal(priorities, &s.Priorities); err != nil {
 		return err
 	}
 

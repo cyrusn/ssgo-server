@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS Credential (
 const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS Student (
   userAlias TEXT PRIMARY KEY,
-	priority BLOB,
+	priorities BLOB,
 	isConfirmed INTEGER,
 	rank INTEGER DEFAULT -1,
   FOREIGN KEY (userAlias) REFERENCES User(userAlias)

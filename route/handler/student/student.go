@@ -16,7 +16,7 @@ type Store interface {
 	Get(userAlias string) (*student.Student, error)
 	List() ([]*student.Student, error)
 	UpdateRank(userAlias string, rank int) error
-	UpdatePriority(userAlias string, priority []int) error
+	UpdatePriorities(userAlias string, priorities []int) error
 	UpdateIsConfirmed(userAlias string, isConfirmed bool) error
 }
 
@@ -51,8 +51,8 @@ func ListHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-// UpdatePriorityHandler updated student's priority
-func UpdatePriorityHandler(store Store) func(http.ResponseWriter, *http.Request) {
+// UpdatePrioritiesHandler updated student's priorities
+func UpdatePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusBadRequest
 		userAlias := mux.Vars(r)["userAlias"]
@@ -63,7 +63,7 @@ func UpdatePriorityHandler(store Store) func(http.ResponseWriter, *http.Request)
 			return
 		}
 		var form = new(struct {
-			Priority []int `json:"priority"`
+			Priorities []int `json:"priorities"`
 		})
 
 		if err := json.Unmarshal(body, form); err != nil {
@@ -71,7 +71,7 @@ func UpdatePriorityHandler(store Store) func(http.ResponseWriter, *http.Request)
 			return
 		}
 
-		if err := store.UpdatePriority(userAlias, form.Priority); err != nil {
+		if err := store.UpdatePriorities(userAlias, form.Priorities); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}
