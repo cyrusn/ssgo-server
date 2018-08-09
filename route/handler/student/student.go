@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/cyrusn/ssgo/model/student"
@@ -106,16 +105,29 @@ func confirmHandlerBuilder(store Store, b bool) func(http.ResponseWriter, *http.
 func UpdateRankHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusBadRequest
-		userAlias := mux.Vars(r)["userAlias"]
-		rank, err := strconv.Atoi(mux.Vars(r)["rank"])
+		// userAlias := mux.Vars(r)["userAlias"]
+
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}
 
-		if err := store.UpdateRank(userAlias, rank); err != nil {
+		var formDatas = []struct {
+			UserAlias string `json:"userAlias"`
+			Rank      int    `json:"rank"`
+		}{}
+
+		if err := json.Unmarshal(body, &formDatas); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
+		}
+
+		for _, d := range formDatas {
+			if err := store.UpdateRank(d.UserAlias, d.Rank); err != nil {
+				helper.PrintError(w, err, errCode)
+				return
+			}
 		}
 		w.Write(nil)
 	}

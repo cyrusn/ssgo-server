@@ -52,7 +52,7 @@ func (env *Env) Routes() []Route {
 		Route{
 			Path:    "/student/{userAlias}",
 			Methods: []string{"GET"},
-			Scopes:  []string{},
+			Scopes:  []string{"STUDENT"},
 			Auth:    true,
 			Handler: student.GetHandler(env.Student),
 		},
@@ -82,9 +82,9 @@ func (env *Env) Routes() []Route {
 		},
 		Route{
 			// set student's rank value
-			Path:    "/student/{userAlias}/rank/{rank}",
+			Path:    "/students/rank",
 			Methods: []string{"PUT"},
-			Scopes:  []string{"TEACHER", "ADMIN"},
+			Scopes:  []string{"ADMIN"},
 			Auth:    true,
 			Handler: student.UpdateRankHandler(env.Student),
 		},
@@ -92,7 +92,7 @@ func (env *Env) Routes() []Route {
 			// list all subjects information
 			Path:    "/subjects",
 			Methods: []string{"GET"},
-			Scopes:  []string{"TEACHER", "ADMIN"},
+			Scopes:  []string{"ADMIN"},
 			Auth:    true,
 			Handler: subject.ListHandler(env.Subject),
 		},
@@ -100,7 +100,7 @@ func (env *Env) Routes() []Route {
 			// update subject's capacity
 			Path:    "/subject/{subjectCode}/capacity/{capacity}",
 			Methods: []string{"PUT"},
-			Scopes:  []string{"TEACHER", "ADMIN"},
+			Scopes:  []string{"ADMIN"},
 			Auth:    true,
 			Handler: subject.UpdateCapacityHandler(env.Subject),
 		},
