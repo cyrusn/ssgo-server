@@ -11,7 +11,7 @@ const (
 	TEACHER_JSON_PATH      = "./data/teacher.json"
 	STUDENT_JSON_PATH      = "./data/student.json"
 	SUBJECT_JSON_PATH      = "./data/subject.json"
-	DB_PATH                = "./test/test.db"
+	DB_PATH                = "./database/test.db"
 	CONTEXT_KEY_NAME       = "authClaim"
 	JWT_KEY_NAME           = "jwt"
 	ROLE_KEY_NAME          = "Role"
