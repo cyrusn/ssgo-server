@@ -19,3 +19,5 @@
 /public/*
 
 *.db
+
+*_test.go
