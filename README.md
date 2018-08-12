@@ -3,11 +3,13 @@
 - an subject-selection web api server
 
 ## Documentation
-- run `godoc -play -http:5050`
-- access the link [src/github.com/cyrusn/ssgo/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo/route/route.go?s=545:577#L18)
+- run `godoc -play -http=:5050`
+- [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server/)
+- router api: [src/github.com/cyrusn/ssgo-server/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server/route/route.go?s=545:577#L18)
+
 
 ## Startup
-There are 3 roles of user in this system *STUDENT*, TEAHCER* and *ADMIN* user.
+There are 3 roles of user in this system *STUDENT*, *TEAHCER* and *ADMIN* user.
 To startup a new subject system event, please follow the following steps.
   - create new database by using `create` command.
   - import subjects by using `import` command with `subject` as subcommand.
