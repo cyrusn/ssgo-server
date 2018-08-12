@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cyrusn/ssgo/model"
+	"github.com/cyrusn/ssgo-server/model"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var createCmd = &cobra.Command{
@@ -19,4 +20,18 @@ var createCmd = &cobra.Command{
 		}
 		fmt.Println("Database created")
 	},
+}
+
+func init() {
+	rootCmd.AddCommand(createCmd)
+
+	createCmd.PersistentFlags().BoolVarP(
+		&isOverwrite,
+		"overwrite",
+		"o",
+		false,
+		"overwrite database if database location exist",
+	)
+
+	viper.BindPFlags(createCmd.PersistentFlags())
 }

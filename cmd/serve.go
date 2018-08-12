@@ -7,14 +7,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cyrusn/ssgo/model/auth"
-	"github.com/cyrusn/ssgo/model/student"
-	"github.com/cyrusn/ssgo/model/subject"
-	"github.com/cyrusn/ssgo/route"
+	"github.com/cyrusn/ssgo-server/model/auth"
+	"github.com/cyrusn/ssgo-server/model/student"
+	"github.com/cyrusn/ssgo-server/model/subject"
+	"github.com/cyrusn/ssgo-server/route"
 
 	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -38,6 +39,33 @@ var serveCmd = &cobra.Command{
 
 		Serve(&env)
 	},
+}
+
+func init() {
+	rootCmd.AddCommand(serveCmd)
+	serveCmd.PersistentFlags().StringVarP(
+		&port,
+		"port",
+		"p",
+		DEFAULT_PORT,
+		"port value",
+	)
+	serveCmd.PersistentFlags().StringVarP(
+		&staticFolderLocation,
+		"static",
+		"s",
+		STATIC_FOLDER_LOCATION,
+		"location of static folder for serving",
+	)
+	serveCmd.PersistentFlags().Int64VarP(
+		&lifeTime,
+		"time",
+		"t",
+		DEFAULT_LIFE_TIME,
+		"update the life time (minutes) of jwt",
+	)
+
+	viper.BindPFlags(serveCmd.PersistentFlags())
 }
 
 // Serve serve the routers
