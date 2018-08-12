@@ -4,13 +4,14 @@
 
 ## Documentation
 - run `godoc -play -http=:5050`
-- [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server/)
-- router api: [src/github.com/cyrusn/ssgo-server/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server/route/route.go?s=545:577#L18)
+- [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server//)
+- router api: [src/github.com/cyrusn/ssgo-server//route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server//route/route.go?s=545:577#L18)
 
 
 ## Startup
 There are 3 roles of user in this system *STUDENT*, *TEAHCER* and *ADMIN* user.
 To startup a new subject system event, please follow the following steps.
+  - create `config.yaml` in `./`
   - create new database by using `create` command.
   - import subjects by using `import` command with `subject` as subcommand.
   - import student users by using `import` command with `student` as subcommand.
@@ -19,6 +20,19 @@ To startup a new subject system event, please follow the following steps.
   - start server by using `serve` command
 
 ## Schemas
+```yaml
+# default value of config.yaml
+key: "skill-vein-planet-neigh-envoi"
+database: "./database/test.db"
+overwrite: false
+teacher: "./data/teacher.json"
+student: "./data/student.json"
+subject: "./data/subject.json"
+port: ":5000"
+static: "./public"
+time: 30
+
+```
 
 ```json
 // teacher.json

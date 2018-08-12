@@ -1,0 +1,9 @@
+key: "skill-vein-planet-neigh-envoi"
+database: "./database/test.db"
+overwrite: false
+teacher: "./data/teacher.json"
+student: "./data/student.json"
+subject: "./data/subject.json"
+port: ":5000"
+static: "./public"
+time: 30

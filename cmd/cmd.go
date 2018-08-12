@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"os"
 
-	"github.com/cyrusn/goJWTAuthHelper"
+	auth "github.com/cyrusn/goJWTAuthHelper"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
+	CONFIG_PATH            = "./config.yaml"
 	TEACHER_JSON_PATH      = "./data/teacher.json"
 	STUDENT_JSON_PATH      = "./data/student.json"
 	SUBJECT_JSON_PATH      = "./data/subject.json"
@@ -22,7 +26,7 @@ const (
 )
 
 var (
-	secret               auth.Secret
+	cfgFile              string
 	port                 string
 	staticFolderLocation string
 	teacherJSONPath      string
@@ -32,119 +36,46 @@ var (
 	isOverwrite          bool
 	privateKey           string
 	lifeTime             int64
-
-	rootCmd = &cobra.Command{
-		Use:   "ssgo",
-		Short: "Welcome to Subject Selection System Backend Server",
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
-		},
-	}
+	secret               auth.Secret
 )
 
-func init() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+func initConfig() {
+	viper.SetConfigFile(cfgFile)
 
-	cobra.OnInitialize(func() {
-		secret = auth.New(
-			CONTEXT_KEY_NAME, JWT_KEY_NAME, ROLE_KEY_NAME, []byte(privateKey),
-		)
-	})
-
-	cmds := []*cobra.Command{
-		versionCmd,
-		createCmd,
-		importCmd,
-		serveCmd,
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("Can't read config:", err)
+		os.Exit(1)
 	}
 
-	for _, cmd := range cmds {
-		rootCmd.AddCommand(cmd)
-	}
+	fmt.Println("Using config file:", viper.ConfigFileUsed())
+}
 
-	importSubCmds := []*cobra.Command{
-		teacherCmd,
-		studentCmd,
-		subjectCmd,
-	}
-
-	for _, cmd := range importSubCmds {
-		importCmd.AddCommand(cmd)
-	}
-
-	rootCmd.PersistentFlags().StringVarP(
-		&privateKey,
-		"key",
-		"k",
-		PRIVATE_KEY,
-		"change the private key for authentication on jwt",
-	)
-
-	rootCmd.PersistentFlags().StringVarP(
-		&dbPath,
-		"location",
-		"l",
-		DB_PATH,
-		"location of sqlite3 database file",
-	)
-
-	createCmd.PersistentFlags().BoolVarP(
-		&isOverwrite,
-		"overwrite",
-		"o",
-		false,
-		"overwrite database if database location exist",
-	)
-
-	teacherCmd.PersistentFlags().StringVarP(
-		&teacherJSONPath,
-		"teacher",
-		"t",
-		TEACHER_JSON_PATH,
-		"path of teacher.json file\nplease check README.md for the schema",
-	)
-
-	studentCmd.PersistentFlags().StringVarP(
-		&studentJSONPath,
-		"student",
-		"u",
-		STUDENT_JSON_PATH,
-		"path of student.json file\nplease check README.md for the schema",
-	)
-
-	subjectCmd.PersistentFlags().StringVarP(
-		&subjectJSONPath,
-		"subject",
-		"s",
-		SUBJECT_JSON_PATH,
-		"path of subject.json file\nplease check README.md for the schema",
-	)
-
-	serveCmd.PersistentFlags().StringVarP(
-		&port,
-		"port",
-		"p",
-		DEFAULT_PORT,
-		"port value",
-	)
-	serveCmd.PersistentFlags().StringVarP(
-		&staticFolderLocation,
-		"static",
-		"s",
-		STATIC_FOLDER_LOCATION,
-		"location of static folder for serving",
-	)
-	serveCmd.PersistentFlags().Int64VarP(
-		&lifeTime,
-		"time",
-		"t",
-		DEFAULT_LIFE_TIME,
-		"update the life time (minutes) of jwt",
+func initSecret() {
+	secret = auth.New(
+		CONTEXT_KEY_NAME, JWT_KEY_NAME, ROLE_KEY_NAME, []byte(privateKey),
 	)
 }
 
+func initVariables() {
+	privateKey = viper.GetString("key")
+	dbPath = viper.GetString("database")
+	isOverwrite = viper.GetBool("overwrite")
+	teacherJSONPath = viper.GetString("teacher")
+	studentJSONPath = viper.GetString("student")
+	subjectJSONPath = viper.GetString("subject")
+	port = viper.GetString("port")
+	staticFolderLocation = viper.GetString("static")
+	lifeTime = viper.GetInt64("time")
+}
+
+// Execute excute all commands
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	cobra.OnInitialize(initConfig, initVariables, initSecret)
 }

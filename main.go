@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cyrusn/ssgo/cmd"
+	"github.com/cyrusn/ssgo-server/cmd"
 
 	_ "github.com/mattn/go-sqlite3"
 )
