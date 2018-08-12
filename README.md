@@ -1,81 +1,55 @@
-# Rewrite Subject-Selection in golang
+# Subject Selection System (Golang)
 
-- an subject-selection web api
+- an subject-selection web api server
 
-# Feature
-## startup
-There are only teacher and student user, *admin* are the one who do the setup of the programme. The setup setup step include the following:
-  - create database for certain subject-selection event.
-  - prepare student list for importing to database
-  - basic setting of config file
+## Documentation
+- run `godoc -play -http:5050`
+- access the link [src/github.com/cyrusn/ssgo/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo/route/route.go?s=545:577#L18)
 
-Once the programme server started, student and teacher user can login to system, 2 different web interface will be launched by teacher and student
-- student
-  - fill up their priority
-  - confirm submission
-  - print out reply slip for sign back by parents
-- teacher
-  - can upload students rank for subject allocation
-  - can adjust subject capacity for subject allocation
-  - can allocate students preference if the above 2 information are provided
-  - view student's application status (sort by isConfirmed, classCode, classNo ...)
+## Startup
+There are 3 roles of user in this system *STUDENT*, TEAHCER* and *ADMIN* user.
+To startup a new subject system event, please follow the following steps.
+  - create new database by using `create` command.
+  - import subjects by using `import` command with `subject` as subcommand.
+  - import student users by using `import` command with `student` as subcommand.
+  - import teacher users by using `import` command with `teacher` as subcommand.
+  - the schema of JSON files for the import commands, please see be session *Schema* below.
+  - start server by using `serve` command
 
-# Reference
-
-- [go-sql-driver/mysql: Go MySQL Driver is a lightweight and fast MySQL driver for Go's (golang) database/sql package](https://github.com/go-sql-driver/mysql)
-- [gorilla/mux: A powerful URL router and dispatcher for golang.](https://github.com/gorilla/mux)
-- [spf13/viper: Go configuration with fangs](https://github.com/spf13/viper)
-- [spf13/cobra: A Commander for modern Go CLI interactions](https://github.com/spf13/cobra/)
-- [Practical Persistence in Go: Organising Database Access](http://www.alexedwards.net/blog/organising-database-access)
-- [Practical Persistence in Go: SQL Databases](http://www.alexedwards.net/blog/practical-persistence-sql)
-
-
-# How to use this application
-- Create new Database or use existing database
-- prepare config file
-
-``` toml
-[server]
-port=":5000"
-
-# https://godoc.org/github.com/go-sql-driver/mysql#Config
-[mysql]
-user="root"
-net="tcp"
-dbname="ssapi"
-
-[event]
-name="test"
-school-year="2016-17"
-
-[json]
-user="./data/user.json"
-rank="./data/rank.json"
-```
-
-# Learn Test
-- [leesei example](https://github.com/leesei/openslide-prop2json)
-
-# using `create`
-
-- prepare `user.json` with following KEY
-  + In the `role` key in user.json, 1 for student, 2 for teacher, 3 for admin (enum in mysql)
+## Schemas
 
 ```json
+// teacher.json
+// system admin have to declare the role of teacher user (either TEACHER or STUDENT).
+// other information of users should fetch in front end program
 [{
-  "username": "lpxxxxxxx",
-  "password": "vosine76",
-  "name": "testing one",
-  "cname": "測試一",
-  "role": 1,
-  "classCode": "3A",
-  "classNo": 1
-}]
+  "userAlias": "string",
+  "password": "string",
+  "role": "ADMIN"
+ }, {
+  "userAlias": "string",
+  "password": "string",
+  "role": "TEACHER"
+  }
+]
 ```
 
-# setup event
-- update all field in `config.toml`
-- run the following command in order
-  + `create`
-  + `import`
-  + `setup`
+```json
+// student.json
+// other information of users should fetch in front end program
+[
+  {
+    "userAlias": "string",
+    "password": "string"
+  }
+]
+```
+
+```json
+// subject.json
+// only subject code are required, the program only store the subject's capacity.
+[
+  "bio", "bafs", "chist", "phy", "ths", "va",
+  "chem", "cscb", "econ", "geog", "hist", "ict"
+]
+```
