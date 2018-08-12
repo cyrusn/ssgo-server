@@ -8,6 +8,7 @@ import (
 	"github.com/cyrusn/ssgo/route/handler/subject"
 )
 
+// Env contain stores for providing values to handlers
 type Env struct {
 	Auth    auth.Store
 	Student student.Store
