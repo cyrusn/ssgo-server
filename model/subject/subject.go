@@ -16,7 +16,7 @@ type Subject struct {
 // Insert insert subject information to database
 func (db *DB) Insert(s *Subject) error {
 	_, err := db.Exec(`
-    INSERT INTO subject (
+    INSERT INTO Subject (
       code, capacity
     ) values (
       ?, ?

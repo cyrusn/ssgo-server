@@ -25,7 +25,7 @@ func (db *DB) Insert(s *Student) error {
 	}
 
 	_, err = db.Exec(
-		`INSERT INTO student (
+		`INSERT INTO Student (
 			userAlias,
 			priorities,
 			isConfirmed,
