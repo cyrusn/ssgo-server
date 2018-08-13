@@ -1,5 +1,5 @@
 key: "skill-vein-planet-neigh-envoi"
-database: "./database/test.db"
+dsn: "root@/ssgoTestDB"
 overwrite: false
 teacher: "./data/teacher.json"
 student: "./data/student.json"

@@ -25,15 +25,15 @@ func (db *DB) Insert(s *Student) error {
 	}
 
 	_, err = db.Exec(
-		`INSERT INTO student (
+		`INSERT INTO Student (
 			userAlias,
 			priorities,
 			isConfirmed,
-			rank
+			ranking
 		) values (?, ?, ?, ?)`,
 		s.UserAlias,
 		bPriorities,
-		convertBool2Int(s.IsConfirmed),
+		s.IsConfirmed,
 		s.Rank,
 	)
 
@@ -51,7 +51,7 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 	}
 
 	_, err = db.Exec(
-		"UPDATE student set priorities = ? WHERE (userAlias = ? and isConfirmed = false)",
+		"UPDATE Student set priorities = ? WHERE (userAlias = ? and isConfirmed = false)",
 		bPriorities,
 		userAlias,
 	)
@@ -61,8 +61,8 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 // UpdateIsConfirmed will update student's isConfirmed.
 func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 	_, err := db.Exec(
-		"UPDATE student set isConfirmed = ? WHERE userAlias = ?",
-		convertBool2Int(isConfirmed),
+		"UPDATE Student set isConfirmed = ? WHERE userAlias = ?",
+		isConfirmed,
 		userAlias,
 	)
 	return err
@@ -71,7 +71,7 @@ func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 // UpdateRank will update student's isConfirmed.
 func (db *DB) UpdateRank(userAlias string, rank int) error {
 	_, err := db.Exec(
-		"UPDATE student set rank = ? WHERE userAlias = ?",
+		"UPDATE Student set ranking = ? WHERE userAlias = ?",
 		rank,
 		userAlias,
 	)

@@ -5,7 +5,7 @@
 ## Documentation
 - run `godoc -play -http=:5050`
 - [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server//)
-- router api: [src/github.com/cyrusn/ssgo-server//route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server//route/route.go?s=545:577#L18)
+- router api: [src/github.com/cyrusn/ssgo-server/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server//route/route.go?s=545:577#L18)
 
 
 ## Startup
@@ -19,11 +19,14 @@ To startup a new subject system event, please follow the following steps.
   - the schema of JSON files for the import commands, please see be session *Schema* below.
   - start server by using `serve` command
 
+## Build for linux (Digital Ocean)
+`GOOS=linux GOARCH=amd64 go build -o ./ssgo main.go`
+
 ## Schemas
 ```yaml
 # default value of config.yaml
 key: "skill-vein-planet-neigh-envoi"
-database: "./database/test.db"
+dsn: "root@/ssgoTestDB"
 overwrite: false
 teacher: "./data/teacher.json"
 student: "./data/student.json"

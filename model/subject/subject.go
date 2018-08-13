@@ -16,7 +16,7 @@ type Subject struct {
 // Insert insert subject information to database
 func (db *DB) Insert(s *Subject) error {
 	_, err := db.Exec(`
-    INSERT INTO subject (
+    INSERT INTO Subject (
       code, capacity
     ) values (
       ?, ?
@@ -30,7 +30,7 @@ func (db *DB) Insert(s *Subject) error {
 // Get return Subject by subject code
 func (db *DB) Get(subjectCode string) (*Subject, error) {
 	row := db.QueryRow(
-		"SELECT * FROM subject where code = ?",
+		"SELECT * FROM Subject where code = ?",
 		subjectCode,
 	)
 	s := new(Subject)
@@ -43,7 +43,7 @@ func (db *DB) Get(subjectCode string) (*Subject, error) {
 
 // List return all subjects
 func (db *DB) List() ([]*Subject, error) {
-	rows, err := db.Query("SELECT * FROM subject")
+	rows, err := db.Query("SELECT * FROM Subject")
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (db *DB) List() ([]*Subject, error) {
 // UpdateCapacity update subject Capacity by subject Code
 func (db *DB) UpdateCapacity(subjectCode string, capacity int) error {
 	_, err := db.Exec(`
-		UPDATE subject set
+		UPDATE Subject set
 			capacity = ?
 		where code = ?;
 		`,

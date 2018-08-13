@@ -35,8 +35,8 @@ func readJSONFile(jsonFilePath string) []byte {
 	return file
 }
 
-func openDB(dbPath string) *sql.DB {
-	db, err := sql.Open("sqlite3", dbPath)
+func openDB(DSN string) *sql.DB {
+	db, err := sql.Open("mysql", DSN)
 	if err != nil {
 		log.Fatal(err)
 	}

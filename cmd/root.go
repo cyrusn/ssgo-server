@@ -31,11 +31,11 @@ func init() {
 	)
 
 	rootCmd.PersistentFlags().StringVarP(
-		&dbPath,
-		"database",
+		&DSN,
+		"dsn",
 		"d",
-		DB_PATH,
-		"location of sqlite3 database file",
+		DEFAULT_DSN,
+		"Data source name of mysql. [ref https://github.com/go-sql-driver/mysql]",
 	)
 
 	for _, name := range []string{"key", "database"} {
