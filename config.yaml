@@ -1,6 +1,7 @@
 key: "skill-vein-planet-neigh-envoi"
 dsn: "root@/ssgoTestDB"
 overwrite: false
+teacher: "./data/teacher.json"
 student: "./data/student.json"
 subject: "./data/subject.json"
 port: ":5000"

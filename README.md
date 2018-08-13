@@ -23,7 +23,7 @@ To startup a new subject system event, please follow the following steps.
 ```yaml
 # default value of config.yaml
 key: "skill-vein-planet-neigh-envoi"
-dsn: "root@/test"
+dsn: "root@/ssgoTestDB"
 overwrite: false
 teacher: "./data/teacher.json"
 student: "./data/student.json"
