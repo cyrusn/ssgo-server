@@ -19,6 +19,7 @@ var createCmd = &cobra.Command{
 			fmt.Println("Please use \"-o\" flag to overwrite existing database")
 			os.Exit(1)
 		}
+
 		fmt.Println("Database created")
 	},
 }

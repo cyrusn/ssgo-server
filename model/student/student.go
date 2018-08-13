@@ -33,7 +33,7 @@ func (db *DB) Insert(s *Student) error {
 		) values (?, ?, ?, ?)`,
 		s.UserAlias,
 		bPriorities,
-		convertBool2Int(s.IsConfirmed),
+		s.IsConfirmed,
 		s.Rank,
 	)
 
@@ -62,7 +62,7 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 	_, err := db.Exec(
 		"UPDATE student set isConfirmed = ? WHERE userAlias = ?",
-		convertBool2Int(isConfirmed),
+		isConfirmed,
 		userAlias,
 	)
 	return err

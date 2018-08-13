@@ -36,17 +36,9 @@ var studentCmd = &cobra.Command{
 		}
 
 		for _, s := range students {
-			if s.Priorities.length == 0 {
-				s.Priorities = []int{}
-			}
-
-			if s.IsConfirmed == nil {
-				s.IsConfirmed = false
-			}
-
-			if s.Rank != -1 {
-				s.Rank = -1
-			}
+			s.Priorities = []int{}
+			s.IsConfirmed = false
+			s.Rank = -1
 
 			if err := studentDB.Insert(&s); err != nil {
 				fmt.Printf("Import error: %v\n", err)

@@ -7,7 +7,7 @@ import (
 
 func (s *Student) scanStudent(v interface{}) error {
 	var priorities []byte
-	var isConfirmed int
+	var isConfirmed bool
 	var err error
 
 	var args = []interface{}{
@@ -32,21 +32,7 @@ func (s *Student) scanStudent(v interface{}) error {
 		return err
 	}
 
-	s.IsConfirmed = convertInt2Bool(isConfirmed)
+	s.IsConfirmed = isConfirmed
 
 	return nil
-}
-
-func convertBool2Int(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}
-
-func convertInt2Bool(i int) bool {
-	if i == 0 {
-		return false
-	}
-	return true
 }

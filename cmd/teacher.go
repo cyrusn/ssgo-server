@@ -27,6 +27,7 @@ var teacherCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
+
 		fmt.Println("teachers are imported")
 	},
 }
