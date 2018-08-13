@@ -29,7 +29,7 @@ func (db *DB) Insert(s *Student) error {
 			userAlias,
 			priorities,
 			isConfirmed,
-			rank
+			ranking
 		) values (?, ?, ?, ?)`,
 		s.UserAlias,
 		bPriorities,
@@ -71,7 +71,7 @@ func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 // UpdateRank will update student's isConfirmed.
 func (db *DB) UpdateRank(userAlias string, rank int) error {
 	_, err := db.Exec(
-		"UPDATE student set rank = ? WHERE userAlias = ?",
+		"UPDATE student set ranking = ? WHERE userAlias = ?",
 		rank,
 		userAlias,
 	)

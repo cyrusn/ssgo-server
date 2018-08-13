@@ -17,7 +17,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var serveCmd = &cobra.Command{
@@ -25,8 +25,8 @@ var serveCmd = &cobra.Command{
 	Short: "Start Subject Selection System Backend Server",
 	Run: func(cmd *cobra.Command, args []string) {
 		auth.UpdateLifeTime(lifeTime)
-		checkPathExist(dbPath, staticFolderLocation)
-		db, err := sql.Open("sqlite3", dbPath)
+		checkPathExist(staticFolderLocation)
+		db, err := sql.Open("mysql", DSN)
 		if err != nil {
 			log.Fatal(err)
 		}

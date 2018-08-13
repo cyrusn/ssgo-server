@@ -15,10 +15,10 @@ var subjectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var codes []string
 
-		checkPathExist(dbPath, subjectJSONPath)
+		checkPathExist(subjectJSONPath)
 		unmarshalJSON(subjectJSONPath, &codes)
 
-		db := &subject.DB{openDB(dbPath)}
+		db := &subject.DB{openDB(DSN)}
 		defer db.Close()
 
 		for _, c := range codes {

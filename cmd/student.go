@@ -16,11 +16,11 @@ var studentCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var students []student.Student
 		var credentials []auth.Credential
-		checkPathExist(dbPath, studentJSONPath)
+		checkPathExist(studentJSONPath)
 		unmarshalJSON(studentJSONPath, &students)
 		unmarshalJSON(studentJSONPath, &credentials)
 
-		db := openDB(dbPath)
+		db := openDB(DSN)
 		defer db.Close()
 
 		credentialDB := &auth.DB{db, &secret}
@@ -36,9 +36,17 @@ var studentCmd = &cobra.Command{
 		}
 
 		for _, s := range students {
-			s.Priorities = []int{}
-			s.IsConfirmed = false
-			s.Rank = -1
+			if s.Priorities.length == 0 {
+				s.Priorities = []int{}
+			}
+
+			if s.IsConfirmed == nil {
+				s.IsConfirmed = false
+			}
+
+			if s.Rank != -1 {
+				s.Rank = -1
+			}
 
 			if err := studentDB.Insert(&s); err != nil {
 				fmt.Printf("Import error: %v\n", err)

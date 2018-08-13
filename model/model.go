@@ -3,8 +3,11 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
-	"os"
+	"strings"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type schema struct {
@@ -12,26 +15,27 @@ type schema struct {
 	content string
 }
 
+const ERR_DATABASE_EXIST = "Database exsits"
+
 const credentialTableSchema = `
 CREATE TABLE IF NOT EXISTS Credential (
-  userAlias TEXT PRIMARY KEY,
-  password BLOB NOT NULL,
-  role TEXT NOT NULL,
-  FOREIGN KEY (userAlias) REFERENCES User(userAlias)
+  userAlias varchar(64) PRIMARY KEY,
+  password BLOB(128) NOT NULL,
+  role varchar(64) NOT NULL
 );`
 
 const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS Student (
-  userAlias TEXT PRIMARY KEY,
+  userAlias varchar(64) PRIMARY KEY,
 	priorities BLOB,
-	isConfirmed INTEGER,
-	rank INTEGER DEFAULT -1,
-  FOREIGN KEY (userAlias) REFERENCES User(userAlias)
+	isConfirmed BOOLEAN,
+	ranking INTEGER DEFAULT -1,
+  FOREIGN KEY (userAlias) REFERENCES Credential(userAlias)
 );`
 
 const subjectTableSchema = `
 CREATE TABLE IF NOT EXISTS Subject (
-  code TEXT PRIMARY KEY,
+  code varchar(64) PRIMARY KEY,
   capacity INTEGER DEFAULT -1
 );`
 
@@ -41,47 +45,85 @@ var schemas = []schema{
 	schema{"SUBJECT", subjectTableSchema},
 }
 
-// CreateDBFile create new database and write schema on it.
-// To create long-lived db for server, use `sql.Open()` to open an database,
-// and developer should check if the database is already existed.
-func CreateDBFile(dbPath string, isOverWrite bool) error {
-	exist, err := IsFileExist(dbPath)
+func ParseDSN(dsn string) (rootDSN, dbName string, err error) {
+	config, err := mysql.ParseDSN(dsn)
 	if err != nil {
+		return "", "", err
+	}
+	dbName = config.DBName
+	rootDSN = strings.Replace(dsn, dbName, "", 1)
+	return rootDSN, dbName, nil
+}
+
+func IsDatabaseExist(db *sql.DB, dbName string) error {
+	showDatabaseQuery := fmt.Sprintf("show databases like '%s'", dbName)
+	if err := db.QueryRow(showDatabaseQuery).Scan(new(string)); err != nil {
 		return err
 	}
-
-	if exist && !isOverWrite {
-		return os.ErrExist
-	}
-
-	if _, err := os.Create(dbPath); err != nil {
-		return err
-	}
-
-	if err := openDBAndCreateTable(dbPath); err != nil {
-		return err
-	}
-
 	return nil
 }
 
-// openDBAndCreateTable open existed database and create table
-func openDBAndCreateTable(dbPath string) error {
-	db, err := sql.Open("sqlite3", dbPath)
+func dropDatabase(db *sql.DB, dbName string) error {
+	dropDatabaseQuery := fmt.Sprintf("drop database %s", dbName)
+	_, err := db.Exec(dropDatabaseQuery)
+	return err
+}
+
+func createDB(db *sql.DB, dbName string) error {
+	createDBQuery := fmt.Sprintf("create database %s", dbName)
+	_, err := db.Exec(createDBQuery)
+	return err
+}
+
+// CreateDatabase create new database and write schema on it.
+// To create long-lived db for server, use `sql.Open()` to open an database,
+// and developer should check if the database is already existed.
+func CreateDatabase(dsn string, isOverWrite bool) error {
+	rootDSN, dbName, err := ParseDSN(dsn)
 	if err != nil {
 		return err
 	}
+
+	db, err := sql.Open("mysql", rootDSN)
 	defer db.Close()
 
-	if err := createTable(db, dbPath); err != nil {
+	if err != nil {
 		return err
 	}
 
+	if err := IsDatabaseExist(db, dbName); err != nil {
+		return createDBAndTable(db, dbName)
+	}
+
+	if !isOverWrite {
+		return errors.New(ERR_DATABASE_EXIST)
+	}
+
+	if err := dropDatabase(db, dbName); err != nil {
+		return err
+	}
+
+	return createDBAndTable(db, dbName)
+}
+
+func createDBAndTable(db *sql.DB, dbName string) error {
+	if err := createDB(db, dbName); err != nil {
+		return err
+	}
+
+	useDBQuery := fmt.Sprintf("use %s", dbName)
+	if _, err := db.Exec(useDBQuery); err != nil {
+		return err
+	}
+
+	if err := createTable(db); err != nil {
+		return err
+	}
 	return nil
 }
 
 // createTable create table for the schema of ScheduleSchema
-func createTable(db *sql.DB, dbPath string) error {
+func createTable(db *sql.DB) error {
 	for _, schema := range schemas {
 		if _, err := db.Exec(schema.content); err != nil {
 			return err
@@ -89,20 +131,4 @@ func createTable(db *sql.DB, dbPath string) error {
 		fmt.Printf("Add %s schema.\n", schema.name)
 	}
 	return nil
-}
-
-// IsFileExist check if file exist
-func IsFileExist(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		// file exist
-		return true, nil
-
-	}
-
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-
-	return false, err
 }

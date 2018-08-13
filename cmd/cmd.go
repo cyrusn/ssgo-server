@@ -15,7 +15,7 @@ const (
 	TEACHER_JSON_PATH      = "./data/teacher.json"
 	STUDENT_JSON_PATH      = "./data/student.json"
 	SUBJECT_JSON_PATH      = "./data/subject.json"
-	DB_PATH                = "./database/test.db"
+	DEFAULT_DSN            = "root@/ssgoTestDB"
 	CONTEXT_KEY_NAME       = "authClaim"
 	JWT_KEY_NAME           = "jwt"
 	ROLE_KEY_NAME          = "Role"
@@ -32,7 +32,7 @@ var (
 	teacherJSONPath      string
 	studentJSONPath      string
 	subjectJSONPath      string
-	dbPath               string
+	DSN                  string
 	isOverwrite          bool
 	privateKey           string
 	lifeTime             int64
@@ -58,7 +58,7 @@ func initSecret() {
 
 func initVariables() {
 	privateKey = viper.GetString("key")
-	dbPath = viper.GetString("database")
+	DSN = viper.GetString("dsn")
 	isOverwrite = viper.GetBool("overwrite")
 	teacherJSONPath = viper.GetString("teacher")
 	studentJSONPath = viper.GetString("student")
