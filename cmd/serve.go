@@ -92,6 +92,9 @@ func Serve(env *route.Env) {
 			Methods(ro.Methods...).
 			Path(ro.Path).
 			HandlerFunc(handler)
+
+		r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(staticFolderLocation))))
+
 	}
 
 	srv := &http.Server{
