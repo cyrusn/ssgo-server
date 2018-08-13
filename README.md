@@ -19,6 +19,9 @@ To startup a new subject system event, please follow the following steps.
   - the schema of JSON files for the import commands, please see be session *Schema* below.
   - start server by using `serve` command
 
+## Build
+`GOOS=linux GOARCH=amd64 go build -o ./ssgo main.go`
+
 ## Schemas
 ```yaml
 # default value of config.yaml
