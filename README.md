@@ -7,16 +7,15 @@
 - [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server//)
 - router api: [src/github.com/cyrusn/ssgo-server/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server//route/route.go?s=545:577#L18)
 
-
 ## Startup
-There are 3 roles of user in this system *STUDENT*, *TEAHCER* and *ADMIN* user.
+There are 3 roles of user in this system. i.e. **STUDENT**, **TEAHCER** and **ADMIN** user.
 To startup a new subject system event, please follow the following steps.
-  - create `config.yaml` in `./`
+  - create `config.yaml` in `./`, please see the session **Schema** below
   - create new database by using `create` command.
   - import subjects by using `import` command with `subject` as subcommand.
   - import student users by using `import` command with `student` as subcommand.
   - import teacher users by using `import` command with `teacher` as subcommand.
-  - the schema of JSON files for the import commands, please see be session *Schema* below.
+  - the schema of JSON files for the import commands, please see the session **Schema** below.
   - start server by using `serve` command
 
 ## Build for linux (Digital Ocean)

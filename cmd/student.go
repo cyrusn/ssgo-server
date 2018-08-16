@@ -20,7 +20,7 @@ var studentCmd = &cobra.Command{
 		unmarshalJSON(studentJSONPath, &students)
 		unmarshalJSON(studentJSONPath, &credentials)
 
-		db := openDB(DSN)
+		db := openDB(dsn)
 		defer db.Close()
 
 		credentialDB := &auth.DB{db, &secret}

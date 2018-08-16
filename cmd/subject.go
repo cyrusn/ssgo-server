@@ -18,7 +18,7 @@ var subjectCmd = &cobra.Command{
 		checkPathExist(subjectJSONPath)
 		unmarshalJSON(subjectJSONPath, &codes)
 
-		db := &subject.DB{openDB(DSN)}
+		db := &subject.DB{openDB(dsn)}
 		defer db.Close()
 
 		for _, c := range codes {

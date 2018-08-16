@@ -31,7 +31,7 @@ func init() {
 	)
 
 	rootCmd.PersistentFlags().StringVarP(
-		&DSN,
+		&dsn,
 		"dsn",
 		"d",
 		DEFAULT_DSN,

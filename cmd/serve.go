@@ -16,8 +16,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var serveCmd = &cobra.Command{
@@ -26,7 +24,7 @@ var serveCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		auth.UpdateLifeTime(lifeTime)
 		checkPathExist(staticFolderLocation)
-		db, err := sql.Open("mysql", DSN)
+		db, err := sql.Open("mysql", dsn)
 		if err != nil {
 			log.Fatal(err)
 		}

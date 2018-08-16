@@ -18,7 +18,7 @@ var teacherCmd = &cobra.Command{
 		checkPathExist(teacherJSONPath)
 		unmarshalJSON(teacherJSONPath, &credentials)
 
-		db := &auth.DB{openDB(DSN), &secret}
+		db := &auth.DB{openDB(dsn), &secret}
 		defer db.Close()
 
 		for _, c := range credentials {
