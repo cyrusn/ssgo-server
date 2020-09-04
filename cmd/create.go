@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/cyrusn/ssgo-server/model"
+	"ssgo-server/model"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

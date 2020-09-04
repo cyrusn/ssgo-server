@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	helper "github.com/cyrusn/goHTTPHelper"
-	"github.com/cyrusn/ssgo-server/model/student"
+	"ssgo-server/model/student"
 	"github.com/gorilla/mux"
 )
 

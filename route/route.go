@@ -3,9 +3,9 @@ package route
 import (
 	"net/http"
 
-	"github.com/cyrusn/ssgo-server/route/handler/auth"
-	"github.com/cyrusn/ssgo-server/route/handler/student"
-	"github.com/cyrusn/ssgo-server/route/handler/subject"
+	"ssgo-server/route/handler/auth"
+	"ssgo-server/route/handler/student"
+	"ssgo-server/route/handler/subject"
 )
 
 // Env contain stores for providing values to handlers

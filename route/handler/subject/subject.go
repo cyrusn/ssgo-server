@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	helper "github.com/cyrusn/goHTTPHelper"
-	"github.com/cyrusn/ssgo-server/model/subject"
+	"ssgo-server/model/subject"
 	"github.com/gorilla/mux"
 )
 

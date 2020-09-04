@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cyrusn/ssgo-server/model/subject"
+	"ssgo-server/model/subject"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

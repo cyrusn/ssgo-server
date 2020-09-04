@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cyrusn/ssgo-server/cmd"
+	"ssgo-server/cmd"
 
 	_ "github.com/go-sql-driver/mysql"
 )

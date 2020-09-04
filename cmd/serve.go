@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cyrusn/ssgo-server/model/auth"
-	"github.com/cyrusn/ssgo-server/model/student"
-	"github.com/cyrusn/ssgo-server/model/subject"
-	"github.com/cyrusn/ssgo-server/route"
+	"ssgo-server/model/auth"
+	"ssgo-server/model/student"
+	"ssgo-server/model/subject"
+	"ssgo-server/route"
 
 	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/gorilla/mux"
