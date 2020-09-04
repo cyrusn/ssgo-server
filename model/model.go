@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS Student (
 	priorities BLOB,
 	isConfirmed BOOLEAN,
 	ranking INTEGER DEFAULT 0,
+	timestamp DATETIME NULL,
   FOREIGN KEY (userAlias) REFERENCES Credential(userAlias)
 );`
 

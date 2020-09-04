@@ -3,6 +3,7 @@ package student
 import (
 	"database/sql"
 	"encoding/json"
+	"time"
 )
 
 type DB struct {
@@ -11,10 +12,11 @@ type DB struct {
 
 // Student stores information for student user.
 type Student struct {
-	UserAlias   string `json:"userAlias"`
-	Priorities  []int  `json:"priorities"`
-	IsConfirmed bool   `json:"isConfirmed"`
-	Rank        int    `json:"rank"`
+	UserAlias   string       `json:"userAlias"`
+	Priorities  []int        `json:"priorities"`
+	IsConfirmed bool         `json:"isConfirmed"`
+	Rank        int          `json:"rank"`
+	Timestamp   sql.NullTime `json:"timestamp"`
 }
 
 // Insert add new student to database.
@@ -60,9 +62,18 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 
 // UpdateIsConfirmed will update student's isConfirmed.
 func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
+	var timestamp sql.NullTime
+	if isConfirmed {
+		timestamp = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
+	}
+
 	_, err := db.Exec(
-		"UPDATE Student set isConfirmed = ? WHERE userAlias = ?",
+		"UPDATE Student set isConfirmed = ?, timestamp = ? WHERE userAlias = ?",
 		isConfirmed,
+		timestamp,
 		userAlias,
 	)
 	return err

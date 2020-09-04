@@ -15,6 +15,7 @@ func (s *Student) scanStudent(v interface{}) error {
 		&priorities,
 		&isConfirmed,
 		&s.Rank,
+		&s.Timestamp,
 	}
 
 	switch t := v.(type) {
