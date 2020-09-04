@@ -17,7 +17,7 @@
 /data/*
 /database/*
 /public/*
-
+/dist/*
 *.db
 
 *_test.go
