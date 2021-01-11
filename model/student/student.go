@@ -12,16 +12,18 @@ type DB struct {
 
 // Student stores information for student user.
 type Student struct {
-	UserAlias   string       `json:"userAlias"`
-	Priorities  []int        `json:"priorities"`
-	IsConfirmed bool         `json:"isConfirmed"`
-	Rank        int          `json:"rank"`
-	Timestamp   sql.NullTime `json:"timestamp"`
+	UserAlias     string       `json:"userAlias"`
+	Priorities    []int        `json:"priorities"`
+	OlePriorities []int        `json:"olePriorities"`
+	IsConfirmed   bool         `json:"isConfirmed"`
+	Rank          int          `json:"rank"`
+	Timestamp     sql.NullTime `json:"timestamp"`
 }
 
 // Insert add new student to database.
 func (db *DB) Insert(s *Student) error {
 	bPriorities, err := json.Marshal(s.Priorities)
+	bOlePriorities, err := json.Marshal(s.OlePriorities)
 	if err != nil {
 		return err
 	}
@@ -30,11 +32,13 @@ func (db *DB) Insert(s *Student) error {
 		`INSERT INTO Student (
 			userAlias,
 			priorities,
+			olePriorities,
 			isConfirmed,
 			ranking
-		) values (?, ?, ?, ?)`,
+		) values (?, ?, ?, ?, ?)`,
 		s.UserAlias,
 		bPriorities,
+		bOlePriorities,
 		s.IsConfirmed,
 		s.Rank,
 	)
@@ -55,6 +59,21 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 	_, err = db.Exec(
 		"UPDATE Student set priorities = ? WHERE (userAlias = ? and isConfirmed = false)",
 		bPriorities,
+		userAlias,
+	)
+	return err
+}
+
+// UpdateOlePriorities will update student's OLE priorities.
+func (db *DB) UpdateOlePriorities(userAlias string, olePriorities []int) error {
+	bOlePriorities, err := json.Marshal(olePriorities)
+	if err != nil {
+		return err
+
+	}
+	_, err = db.Exec(
+		"UPDATE Student set olePriorities = ? WHERE (userAlias = ? and isConfirmed = false)",
+		bOlePriorities,
 		userAlias,
 	)
 	return err

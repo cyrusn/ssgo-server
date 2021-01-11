@@ -5,8 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	helper "github.com/cyrusn/goHTTPHelper"
 	"ssgo-server/model/student"
+
+	helper "github.com/cyrusn/goHTTPHelper"
 	"github.com/gorilla/mux"
 )
 
@@ -71,6 +72,34 @@ func UpdatePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Reques
 		}
 
 		if err := store.UpdatePriorities(userAlias, form.Priorities); err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+		w.Write(nil)
+	}
+}
+
+// UpdateOlePrioritiesHandler updated student's priorities
+func UpdateOlePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		errCode := http.StatusBadRequest
+		userAlias := mux.Vars(r)["userAlias"]
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+		var form = new(struct {
+			OlePriorities []int `json:"olePriorities"`
+		})
+
+		if err := json.Unmarshal(body, form); err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+
+		if err := store.UpdatePriorities(userAlias, form.OlePriorities); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}

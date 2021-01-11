@@ -28,6 +28,7 @@ const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS Student (
   userAlias varchar(64) PRIMARY KEY,
 	priorities BLOB,
+	olePriorities BLOB,
 	isConfirmed BOOLEAN,
 	ranking INTEGER DEFAULT 0,
 	timestamp DATETIME NULL,

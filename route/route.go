@@ -66,6 +66,14 @@ func (env *Env) Routes() []Route {
 			Handler: student.UpdatePrioritiesHandler(env.Student),
 		},
 		Route{
+			// update student's olePriorities
+			Path:    "/student/{userAlias}/ole_priorities",
+			Methods: []string{"PUT"},
+			Scopes:  []string{"STUDENT"},
+			Auth:    true,
+			Handler: student.UpdateOlePrioritiesHandler(env.Student),
+		},
+		Route{
 			// set student's isConfirmed value to true
 			Path:    "/student/{userAlias}/isconfirmed/true",
 			Methods: []string{"PUT"},
