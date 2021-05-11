@@ -22,7 +22,7 @@ There are 3 roles of user in this system. i.e. **STUDENT**, **TEAHCER** and **AD
 
 ## Build for linux (Digital Ocean)
 
-`GOOS=linux GOARCH=amd64 go build -o ./ssgo main.go`
+`GOOS=linux GOARCH=amd64 go build -o ./dist/ssgo main.go && scp -r ./dist/ssgo root@calp:~/ssgo/`
 
 ## Schemas
 
@@ -44,14 +44,16 @@ time: 30
 // teacher.json
 // system admin have to declare the role of teacher user (either TEACHER or STUDENT).
 // other information of users should fetch in front end program
-[{
-  "userAlias": "string",
-  "password": "string",
-  "role": "ADMIN"
- }, {
-  "userAlias": "string",
-  "password": "string",
-  "role": "TEACHER"
+[
+  {
+    "userAlias": "string",
+    "password": "string",
+    "role": "ADMIN"
+  },
+  {
+    "userAlias": "string",
+    "password": "string",
+    "role": "TEACHER"
   }
 ]
 ```
@@ -71,7 +73,17 @@ time: 30
 // subject.json
 // only subject code are required, the program only store the subject's capacity.
 [
-  "bio", "bafs", "chist", "phy", "ths", "va",
-  "chem", "cscb", "econ", "geog", "hist", "ict"
+  "bio",
+  "bafs",
+  "chist",
+  "phy",
+  "ths",
+  "va",
+  "chem",
+  "econ",
+  "geog",
+  "hist",
+  "hmsc",
+  "ict"
 ]
 ```

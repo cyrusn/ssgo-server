@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"ssgo-server/model/auth"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -18,7 +19,7 @@ var teacherCmd = &cobra.Command{
 		checkPathExist(teacherJSONPath)
 		unmarshalJSON(teacherJSONPath, &credentials)
 
-		db := &auth.DB{openDB(dsn), &secret}
+		db := &auth.DB{DB: openDB(dsn), Secret: &secret}
 		defer db.Close()
 
 		for _, c := range credentials {

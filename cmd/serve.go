@@ -30,9 +30,9 @@ var serveCmd = &cobra.Command{
 		}
 
 		env := route.Env{
-			&auth.DB{db, &secret},
-			&student.DB{db},
-			&subject.DB{db},
+			Auth:    &auth.DB{DB: db, Secret: &secret},
+			Student: &student.DB{DB: db},
+			Subject: &subject.DB{DB: db},
 		}
 
 		Serve(&env)

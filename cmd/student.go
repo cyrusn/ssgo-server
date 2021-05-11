@@ -6,6 +6,7 @@ import (
 
 	"ssgo-server/model/auth"
 	"ssgo-server/model/student"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,8 +24,8 @@ var studentCmd = &cobra.Command{
 		db := openDB(dsn)
 		defer db.Close()
 
-		credentialDB := &auth.DB{db, &secret}
-		studentDB := &student.DB{db}
+		credentialDB := &auth.DB{DB: db, Secret: &secret}
+		studentDB := &student.DB{DB: db}
 
 		for _, c := range credentials {
 			c.Role = "STUDENT"
@@ -38,6 +39,10 @@ var studentCmd = &cobra.Command{
 		for _, s := range students {
 			if s.Priorities == nil {
 				s.Priorities = []int{}
+			}
+
+			if s.OlePriorities == nil {
+				s.OlePriorities = []int{}
 			}
 
 			if err := studentDB.Insert(&s); err != nil {

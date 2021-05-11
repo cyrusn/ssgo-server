@@ -1,4 +1,4 @@
-// Package model accept only sqlite3 database
+// Package model accept only mysql database
 package model
 
 import (
@@ -28,7 +28,6 @@ const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS Student (
   userAlias varchar(64) PRIMARY KEY,
 	priorities BLOB,
-	olePriorities BLOB,
 	isConfirmed BOOLEAN,
 	ranking INTEGER DEFAULT 0,
 	timestamp DATETIME NULL,
@@ -42,9 +41,9 @@ CREATE TABLE IF NOT EXISTS Subject (
 );`
 
 var schemas = []schema{
-	schema{"CREDENTIAL", credentialTableSchema},
-	schema{"STUDENT", studentTableSchema},
-	schema{"SUBJECT", subjectTableSchema},
+	{"CREDENTIAL", credentialTableSchema},
+	{"STUDENT", studentTableSchema},
+	{"SUBJECT", subjectTableSchema},
 }
 
 func ParseDSN(dsn string) (rootDSN, dbName string, err error) {

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"ssgo-server/model/subject"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -18,7 +19,7 @@ var subjectCmd = &cobra.Command{
 		checkPathExist(subjectJSONPath)
 		unmarshalJSON(subjectJSONPath, &codes)
 
-		db := &subject.DB{openDB(dsn)}
+		db := &subject.DB{DB: openDB(dsn)}
 		defer db.Close()
 
 		for _, c := range codes {
