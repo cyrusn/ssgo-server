@@ -12,18 +12,17 @@ type DB struct {
 
 // Student stores information for student user.
 type Student struct {
-	UserAlias     string       `json:"userAlias"`
-	Priorities    []int        `json:"priorities"`
-	OlePriorities []int        `json:"olePriorities"`
-	IsConfirmed   bool         `json:"isConfirmed"`
-	Rank          int          `json:"rank"`
-	Timestamp     sql.NullTime `json:"timestamp"`
+	UserAlias   string       `json:"userAlias"`
+	Priorities  []int        `json:"priorities"`
+	IsX3        bool         `json:"isX3"`
+	IsConfirmed bool         `json:"isConfirmed"`
+	Rank        int          `json:"rank"`
+	Timestamp   sql.NullTime `json:"timestamp"`
 }
 
 // Insert add new student to database.
 func (db *DB) Insert(s *Student) error {
 	bPriorities, err := json.Marshal(s.Priorities)
-	bOlePriorities, err := json.Marshal(s.OlePriorities)
 	if err != nil {
 		return err
 	}
@@ -32,13 +31,13 @@ func (db *DB) Insert(s *Student) error {
 		`INSERT INTO Student (
 			userAlias,
 			priorities,
-			olePriorities,
+			isX3,
 			isConfirmed,
 			ranking
 		) values (?, ?, ?, ?, ?)`,
 		s.UserAlias,
 		bPriorities,
-		bOlePriorities,
+		s.IsX3,
 		s.IsConfirmed,
 		s.Rank,
 	)
@@ -64,21 +63,6 @@ func (db *DB) UpdatePriorities(userAlias string, priorities []int) error {
 	return err
 }
 
-// UpdateOlePriorities will update student's OLE priorities.
-func (db *DB) UpdateOlePriorities(userAlias string, olePriorities []int) error {
-	bOlePriorities, err := json.Marshal(olePriorities)
-	if err != nil {
-		return err
-
-	}
-	_, err = db.Exec(
-		"UPDATE Student set olePriorities = ? WHERE (userAlias = ? and isConfirmed = false)",
-		bOlePriorities,
-		userAlias,
-	)
-	return err
-}
-
 // UpdateIsConfirmed will update student's isConfirmed.
 func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 	var timestamp sql.NullTime
@@ -93,6 +77,17 @@ func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 		"UPDATE Student set isConfirmed = ?, timestamp = ? WHERE userAlias = ?",
 		isConfirmed,
 		timestamp,
+		userAlias,
+	)
+	return err
+}
+
+// UpdateIsConfirmed will update student's isConfirmed.
+func (db *DB) UpdateIsX3(userAlias string, isX3 bool) error {
+
+	_, err := db.Exec(
+		"UPDATE Student set isX3 = ? WHERE userAlias = ?",
+		isX3,
 		userAlias,
 	)
 	return err

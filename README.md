@@ -80,6 +80,7 @@ time: 30
   "ths",
   "va",
   "chem",
+  "bio2", // cscb => bio2
   "econ",
   "geog",
   "hist",
