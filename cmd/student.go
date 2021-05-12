@@ -41,10 +41,6 @@ var studentCmd = &cobra.Command{
 				s.Priorities = []int{}
 			}
 
-			if s.OlePriorities == nil {
-				s.OlePriorities = []int{}
-			}
-
 			if err := studentDB.Insert(&s); err != nil {
 				fmt.Printf("Import error: %v\n", err)
 				os.Exit(1)

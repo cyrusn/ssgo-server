@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"ssgo-server/model/student"
 
@@ -16,6 +17,7 @@ type Store interface {
 	Get(userAlias string) (*student.Student, error)
 	List() ([]*student.Student, error)
 	UpdateRank(userAlias string, rank int) error
+	UpdateIsX3(userAlias string, is3X bool) error
 	UpdatePriorities(userAlias string, priorities []int) error
 	UpdateIsConfirmed(userAlias string, isConfirmed bool) error
 }
@@ -79,27 +81,20 @@ func UpdatePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Reques
 	}
 }
 
-// UpdateOlePrioritiesHandler updated student's priorities
-func UpdateOlePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Request) {
+// IsConfirmHandler update IsConfirmed status of student
+func IsConfirmHandler(store Store) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusBadRequest
 		userAlias := mux.Vars(r)["userAlias"]
-
-		body, err := ioutil.ReadAll(r.Body)
+		strBool := mux.Vars(r)["bool"]
+		b, err := strconv.ParseBool(strBool)
 		if err != nil {
-			helper.PrintError(w, err, errCode)
-			return
-		}
-		var form = new(struct {
-			OlePriorities []int `json:"olePriorities"`
-		})
-
-		if err := json.Unmarshal(body, form); err != nil {
+			errCode := http.StatusBadRequest
 			helper.PrintError(w, err, errCode)
 			return
 		}
 
-		if err := store.UpdatePriorities(userAlias, form.OlePriorities); err != nil {
+		if err := store.UpdateIsConfirmed(userAlias, b); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}
@@ -107,22 +102,20 @@ func UpdateOlePrioritiesHandler(store Store) func(http.ResponseWriter, *http.Req
 	}
 }
 
-// ConfirmedHandler update IsConfirmed status of student
-func ConfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
-	return confirmHandlerBuilder(store, true)
-}
-
-// UnconfirmedHandler update IsConfirmed status of student
-func UnconfirmedHandler(store Store) func(http.ResponseWriter, *http.Request) {
-	return confirmHandlerBuilder(store, false)
-}
-
-func confirmHandlerBuilder(store Store, b bool) func(http.ResponseWriter, *http.Request) {
+// IsX3Handler update Is3X
+func IsX3Handler(store Store) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		errCode := http.StatusBadRequest
 		userAlias := mux.Vars(r)["userAlias"]
+		strBool := mux.Vars(r)["bool"]
+		b, err := strconv.ParseBool(strBool)
+		if err != nil {
+			errCode := http.StatusBadRequest
+			helper.PrintError(w, err, errCode)
+			return
+		}
 
-		if err := store.UpdateIsConfirmed(userAlias, b); err != nil {
+		if err := store.UpdateIsX3(userAlias, b); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}

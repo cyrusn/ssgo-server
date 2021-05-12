@@ -60,26 +60,19 @@ func (env *Env) Routes() []Route {
 		Auth:    true,
 		Handler: student.UpdatePrioritiesHandler(env.Student),
 	}, {
-		// update student's olePriorities
-		Path:    "/student/{userAlias}/ole_priorities",
-		Methods: []string{"PUT"},
-		Scopes:  []string{"STUDENT"},
-		Auth:    true,
-		Handler: student.UpdateOlePrioritiesHandler(env.Student),
-	}, {
-		// set student's isConfirmed value to true
-		Path:    "/student/{userAlias}/isconfirmed/true",
+		// set student's isConfirmed value
+		Path:    "/student/{userAlias}/isconfirmed/{bool}",
 		Methods: []string{"PUT"},
 		Scopes:  []string{"STUDENT", "ADMIN"},
 		Auth:    true,
-		Handler: student.ConfirmedHandler(env.Student),
+		Handler: student.IsConfirmHandler(env.Student),
 	}, {
-		// set student's isConfirmed value to false
-		Path:    "/student/{userAlias}/isconfirmed/false",
+		// set student's isX3 value
+		Path:    "/student/{userAlias}/isx3/{bool}",
 		Methods: []string{"PUT"},
 		Scopes:  []string{"ADMIN"},
 		Auth:    true,
-		Handler: student.UnconfirmedHandler(env.Student),
+		Handler: student.IsX3Handler(env.Student),
 	}, {
 		// set student's rank value
 		Path:    "/students/rank",
