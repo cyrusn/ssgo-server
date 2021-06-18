@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"ssgo-server/model/auth"
+	"ssgo-server/model/signature"
 	"ssgo-server/model/student"
 	"ssgo-server/model/subject"
 	"ssgo-server/route"
@@ -30,9 +31,10 @@ var serveCmd = &cobra.Command{
 		}
 
 		env := route.Env{
-			Auth:    &auth.DB{DB: db, Secret: &secret},
-			Student: &student.DB{DB: db},
-			Subject: &subject.DB{DB: db},
+			Auth:      &auth.DB{DB: db, Secret: &secret},
+			Student:   &student.DB{DB: db},
+			Subject:   &subject.DB{DB: db},
+			Signature: &signature.DB{DB: db},
 		}
 
 		Serve(&env)

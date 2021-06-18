@@ -33,18 +33,27 @@ CREATE TABLE IF NOT EXISTS Student (
 	ranking INTEGER DEFAULT 0,
 	timestamp DATETIME NULL,
   FOREIGN KEY (userAlias) REFERENCES Credential(userAlias)
-);`
+	);`
 
 const subjectTableSchema = `
-CREATE TABLE IF NOT EXISTS Subject (
-  code varchar(64) PRIMARY KEY,
-  capacity INTEGER DEFAULT 0
-);`
+	CREATE TABLE IF NOT EXISTS Subject (
+		code varchar(64) PRIMARY KEY,
+		capacity INTEGER DEFAULT 0
+	);`
+
+const signatureTableSchema = `
+	CREATE TABLE IF NOT EXISTS Signature (
+		userAlias varchar(64) PRIMARY KEY,
+  	isSigned BOOLEAN,
+  	address TEXT DEFAULT NULL,
+		FOREIGN KEY (userAlias) REFERENCES Credential(userAlias)
+	);`
 
 var schemas = []schema{
 	{"CREDENTIAL", credentialTableSchema},
 	{"STUDENT", studentTableSchema},
 	{"SUBJECT", subjectTableSchema},
+	{"SIGNATURE", signatureTableSchema},
 }
 
 func ParseDSN(dsn string) (rootDSN, dbName string, err error) {

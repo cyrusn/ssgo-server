@@ -6,9 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "v1.5.0"
+const version = "v1.6.0"
 const releaseHistory = `Release History:
-	v1.5.0: record student who are going to take HMSC as 3rd elective.
+	v1.6.0: parent signature is saved to database.
+	v1.5.0: record students who are going to take HMSC as 3rd elective.
 	v1.4.2: better format
 	v1.3.0: add timestamp feature
 	v1.2.0: use mysql instead of sqlite3

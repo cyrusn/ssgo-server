@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"ssgo-server/model/auth"
+	"ssgo-server/model/signature"
 	"ssgo-server/model/student"
 
 	"github.com/spf13/cobra"
@@ -26,6 +27,7 @@ var studentCmd = &cobra.Command{
 
 		credentialDB := &auth.DB{DB: db, Secret: &secret}
 		studentDB := &student.DB{DB: db}
+		signatureDB := &signature.DB{DB: db}
 
 		for _, c := range credentials {
 			c.Role = "STUDENT"
@@ -45,6 +47,12 @@ var studentCmd = &cobra.Command{
 				fmt.Printf("Import error: %v\n", err)
 				os.Exit(1)
 			}
+
+			if err := signatureDB.Insert(s.UserAlias); err != nil {
+				fmt.Printf("Import error: %v\n", err)
+				os.Exit(1)
+			}
+
 		}
 
 		fmt.Println("students are imported")

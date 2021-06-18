@@ -4,15 +4,17 @@ import (
 	"net/http"
 
 	"ssgo-server/route/handler/auth"
+	"ssgo-server/route/handler/signature"
 	"ssgo-server/route/handler/student"
 	"ssgo-server/route/handler/subject"
 )
 
 // Env contain stores for providing values to handlers
 type Env struct {
-	Auth    auth.Store
-	Student student.Store
-	Subject subject.Store
+	Auth      auth.Store
+	Signature signature.Store
+	Student   student.Store
+	Subject   subject.Store
 }
 
 // Route stores information of a route in mux
@@ -59,6 +61,27 @@ func (env *Env) Routes() []Route {
 		Scopes:  []string{"STUDENT"},
 		Auth:    true,
 		Handler: student.UpdatePrioritiesHandler(env.Student),
+	}, {
+		// update student's signature
+		Path:    "/signature/{userAlias}",
+		Methods: []string{"PUT"},
+		Scopes:  []string{"STUDENT"},
+		Auth:    true,
+		Handler: signature.UpdateAddressHandler(env.Signature),
+	}, {
+		// get signature
+		Path:    "/signature/{userAlias}",
+		Methods: []string{"GET"},
+		Scopes:  []string{"STUDENT", "TEACHER", "ADMIN"},
+		Auth:    true,
+		Handler: signature.GetHandler(env.Signature),
+	}, {
+		// set student's isSigned value
+		Path:    "/signature/{userAlias}/issigned/{bool}",
+		Methods: []string{"PUT"},
+		Scopes:  []string{"STUDENT", "ADMIN"},
+		Auth:    true,
+		Handler: signature.UpdateIsSignedHandler(env.Signature),
 	}, {
 		// set student's isConfirmed value
 		Path:    "/student/{userAlias}/isconfirmed/{bool}",
