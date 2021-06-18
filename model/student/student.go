@@ -82,7 +82,7 @@ func (db *DB) UpdateIsConfirmed(userAlias string, isConfirmed bool) error {
 	return err
 }
 
-// UpdateIsConfirmed will update student's isConfirmed.
+// UpdateIsX3 will update student's isX3.
 func (db *DB) UpdateIsX3(userAlias string, isX3 bool) error {
 
 	_, err := db.Exec(
