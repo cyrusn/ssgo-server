@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"ssgo-server/model"
@@ -16,7 +15,6 @@ var createCmd = &cobra.Command{
 	Short: "Create database for Subject Selection System Backend Server",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := model.CreateDatabase(dsn, isOverwrite); err != nil {
-			log.Println(err)
 			fmt.Println("Please use \"-o\" flag to overwrite existing database")
 			os.Exit(1)
 		}

@@ -13,9 +13,24 @@ import (
 )
 
 type Store interface {
+	List() ([]*signature.Signature, error)
 	Get(userAlias string) (*signature.Signature, error)
 	UpdateIsSigned(userAlias string, isSigned bool) error
 	UpdateAddress(userAlias string, signature string) error
+}
+
+// ListHandler get all student's signature
+func ListHandler(store Store) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		list, err := store.List()
+		errCode := http.StatusBadRequest
+
+		if err != nil {
+			helper.PrintError(w, err, errCode)
+			return
+		}
+		helper.PrintJSON(w, list)
+	}
 }
 
 // GetHandler get signature information by given userAlias
@@ -46,7 +61,7 @@ func UpdateAddressHandler(store Store) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 		var form = new(struct {
-			Signature string `json:"signature"`
+			Address string `json:"address"`
 		})
 
 		if err := json.Unmarshal(body, form); err != nil {
@@ -54,7 +69,7 @@ func UpdateAddressHandler(store Store) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
-		if err := store.UpdateAddress(userAlias, form.Signature); err != nil {
+		if err := store.UpdateAddress(userAlias, form.Address); err != nil {
 			helper.PrintError(w, err, errCode)
 			return
 		}

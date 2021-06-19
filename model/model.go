@@ -45,7 +45,7 @@ const signatureTableSchema = `
 	CREATE TABLE IF NOT EXISTS Signature (
 		userAlias varchar(64) PRIMARY KEY,
   	isSigned BOOLEAN,
-  	address TEXT DEFAULT NULL,
+  	address MEDIUMTEXT,
 		FOREIGN KEY (userAlias) REFERENCES Credential(userAlias)
 	);`
 

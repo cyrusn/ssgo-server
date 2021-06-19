@@ -62,6 +62,13 @@ func (env *Env) Routes() []Route {
 		Auth:    true,
 		Handler: student.UpdatePrioritiesHandler(env.Student),
 	}, {
+		// get all student's signature
+		Path:    "/signatures",
+		Methods: []string{"GET"},
+		Scopes:  []string{"TEACHER", "ADMIN"},
+		Auth:    true,
+		Handler: signature.ListHandler(env.Signature),
+	}, {
 		// update student's signature
 		Path:    "/signature/{userAlias}",
 		Methods: []string{"PUT"},

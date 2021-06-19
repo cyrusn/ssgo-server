@@ -2,7 +2,6 @@ package signature
 
 import (
 	"database/sql"
-	"log"
 )
 
 type DB struct {
@@ -40,7 +39,7 @@ func (db *DB) Insert(userAlias string) error {
 		) values (?, ?, ?)`,
 		userAlias,
 		false,
-		nil,
+		"",
 	)
 
 	return err
@@ -48,22 +47,42 @@ func (db *DB) Insert(userAlias string) error {
 
 // UpdateIsSigned will update student's isSigned.
 func (db *DB) UpdateIsSigned(userAlias string, isSigned bool) error {
-	log.Println("start")
 	_, err := db.Exec(
 		"UPDATE Signature set isSigned = ? WHERE userAlias = ?",
 		isSigned,
 		userAlias,
 	)
-	log.Println("err")
 	return err
 }
 
 // UpdateSignatureAddress will update parents' signature
 func (db *DB) UpdateAddress(userAlias string, address string) error {
 	_, err := db.Exec(
-		"UPDATE Student set address = ? WHERE userAlias = ?",
+		"UPDATE Signature set address = ? WHERE userAlias = ?",
 		address,
 		userAlias,
 	)
 	return err
+}
+
+// List get all signatures.
+func (db *DB) List() ([]*Signature, error) {
+	var list []*Signature
+	rows, err := db.Query("SELECT * FROM Signature")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		s := new(Signature)
+		err := s.scanSignature(rows)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, s)
+	}
+
+	return list, nil
 }
