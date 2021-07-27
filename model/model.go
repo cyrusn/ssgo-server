@@ -15,7 +15,7 @@ type schema struct {
 	content string
 }
 
-const ERR_DATABASE_EXIST = "Database exsits"
+const ERR_DATABASE_EXIST = "Database exists"
 
 const credentialTableSchema = `
 CREATE TABLE IF NOT EXISTS Credential (

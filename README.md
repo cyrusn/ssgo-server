@@ -2,33 +2,34 @@
 
 - an subject-selection web api server
 
-## Documentation
-
-- run `godoc -play -http=:5050`
-- [ssgo-server - The Go Programming Language](http://localhost:5050/pkg/github.com/cyrusn/ssgo-server//)
-- router api: [src/github.com/cyrusn/ssgo-server/route/route.go - The Go Programming Language](http://localhost:5050/src/github.com/cyrusn/ssgo-server//route/route.go?s=545:577#L18)
-
 ## Startup
 
-There are 3 roles of user in this system. i.e. **STUDENT**, **TEAHCER** and **ADMIN** user. To startup a new subject system event, please follow the following steps.
+`go build -o ssgo main.go`
 
-- create `config.yaml` in `./`, please see the session **Schema** below
-- create new database by using `create` command.
-- import subjects by using `import` command with `subject` as subcommand.
-- import student users by using `import` command with `student` as subcommand.
-- import teacher users by using `import` command with `teacher` as subcommand.
-- the schema of JSON files for the import commands, please see the session **Schema** below.
-- start server by using `serve` command
+There are 3 types of user in this system. i.e. **STUDENT**, **TEACHER** and **ADMIN**.  
+To startup a new subject system event, please follow the following steps:
 
-## Build for linux (Digital Ocean)
+- prepare `config.yaml` and users JSON files, please see the session [Schemas](#schemas) below
+- build frontend and place in `static` in `config.yaml`
+- create a MySQL database, place database dsn (uri) in `config.yaml`
+- [TODO] init project with `./ssgo init`, which does the followings:
+  - create database by `./ssgo create`
+  - import subjects by `./ssgo import subject`
+  - import student users by `./ssgo import student`
+  - import teacher users by `./ssgo import teacher`
+- start server by `./ssgo serve`
+
+### Build for linux (Digital Ocean)
 
 `GOOS=linux GOARCH=amd64 go build -o ./dist/ssgo main.go && scp -r ./dist/ssgo root@calp:~/ssgo/`
 
 ## Schemas
 
+### `config.yaml`
+
 ```yaml
 # default value of config.yaml
-key: "skill-vein-planet-neigh-envoi"
+key: "skill-vein-planet-neigh-envoi" // JWT signature secret
 dsn: "root@/ssgoTestDB"
 overwrite: false
 teacher: "./data/teacher.json"
@@ -39,6 +40,8 @@ static: "./public"
 # the life time of jwt-token in minutes
 time: 30
 ```
+
+### `teacher.json`
 
 ```json
 // teacher.json
@@ -58,6 +61,8 @@ time: 30
 ]
 ```
 
+### `student.json`
+
 ```json
 // student.json
 // other information of users should fetch in front end program
@@ -68,6 +73,8 @@ time: 30
   }
 ]
 ```
+
+### `subject.json`
 
 ```json
 // subject.json
