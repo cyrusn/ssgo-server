@@ -13,11 +13,15 @@ type DB struct {
 // Student stores information for student user.
 type Student struct {
 	UserAlias   string       `json:"userAlias"`
+	ClassCode   string       `json:"classCode"`
+	ClassNo     int          `json:"classNo"`
 	Priorities  []int        `json:"priorities"`
 	IsX3        bool         `json:"isX3"`
 	IsConfirmed bool         `json:"isConfirmed"`
 	Rank        int          `json:"rank"`
 	Timestamp   sql.NullTime `json:"timestamp"`
+	Name        string       `json:"name"`
+	Cname       string       `json:"cname"`
 }
 
 // Insert add new student to database.
@@ -30,12 +34,16 @@ func (db *DB) Insert(s *Student) error {
 	_, err = db.Exec(
 		`INSERT INTO Student (
 			userAlias,
+			classCode,
+			classNo,
 			priorities,
 			isX3,
 			isConfirmed,
 			ranking
-		) values (?, ?, ?, ?, ?)`,
+		) values (?, ?, ?, ?, ?, ?, ?)`,
 		s.UserAlias,
+		s.ClassCode,
+		s.ClassNo,
 		bPriorities,
 		s.IsX3,
 		s.IsConfirmed,
@@ -106,7 +114,14 @@ func (db *DB) UpdateRank(userAlias string, rank int) error {
 // Get query student by userAlias.
 func (db *DB) Get(userAlias string) (*Student, error) {
 	s := new(Student)
-	row := db.QueryRow("SELECT * FROM Student where userAlias = ?", userAlias)
+	row := db.QueryRow(
+		`SELECT 
+			s.* , c.name, c.cname
+	FROM Student as s
+	LEFT JOIN Credential as c ON
+	 	s.userAlias=c.userAlias
+	WHERE s.userAlias=?`,
+		userAlias)
 	err := s.scanStudent(row)
 	if err != nil {
 		return nil, err
@@ -118,7 +133,13 @@ func (db *DB) Get(userAlias string) (*Student, error) {
 // List get all students.
 func (db *DB) List() ([]*Student, error) {
 	var list []*Student
-	rows, err := db.Query("SELECT * FROM Student")
+	rows, err := db.Query(`
+	SELECT 
+			s.* , c.name, c.cname
+	FROM Student as s
+	LEFT JOIN Credential as c ON
+			s.userAlias=c.userAlias
+	`)
 	if err != nil {
 		return nil, err
 	}

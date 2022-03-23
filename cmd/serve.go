@@ -24,7 +24,8 @@ var serveCmd = &cobra.Command{
 	Short: "Start Subject Selection System Backend Server",
 	Run: func(cmd *cobra.Command, args []string) {
 		auth.UpdateLifeTime(lifeTime)
-		checkPathExist(staticFolderLocation)
+		// NOTE: Disable serving static folder since using docker
+		// checkPathExist(staticFolderLocation)
 		db, err := sql.Open("mysql", dsn)
 		if err != nil {
 			log.Fatal(err)
@@ -50,13 +51,14 @@ func init() {
 		DEFAULT_PORT,
 		"port value",
 	)
-	serveCmd.PersistentFlags().StringVarP(
-		&staticFolderLocation,
-		"static",
-		"s",
-		STATIC_FOLDER_LOCATION,
-		"location of static folder for serving",
-	)
+	// NOTE: Disable serving static folder since using docker
+	// serveCmd.PersistentFlags().StringVarP(
+	// 	&staticFolderLocation,
+	// 	"static",
+	// 	"s",
+	// 	STATIC_FOLDER_LOCATION,
+	// 	"location of static folder for serving",
+	// )
 	serveCmd.PersistentFlags().Int64VarP(
 		&lifeTime,
 		"time",
@@ -88,33 +90,36 @@ func Serve(env *route.Env) {
 		}
 
 		r.
-			PathPrefix("/api/").
+			// NOTE: as disabled serving static folder, no /api/ prefix are required
+			// PathPrefix("/api/").
 			Methods(ro.Methods...).
 			Path(ro.Path).
 			HandlerFunc(handler)
 
 	}
 
-	serveStaticFolder(r, staticFolderLocation)
+	// NOTE: Disable serving static folder since using docker
+	// serveStaticFolder(r, staticFolderLocation)
 
 	srv := &http.Server{
 		Handler: helper.Logger(r),
-		Addr:    "localhost" + port,
+		Addr:    "0.0.0.0" + port,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
 	// Bind to a port and pass our router in
-	fmt.Println("Available on http://localhost" + port)
+	fmt.Println("Available on http://0.0.0.0" + port)
 	log.Fatal(srv.ListenAndServe())
 }
 
-func serveStaticFolder(r *mux.Router, staticFolderLocation string) {
-	staticFolder := http.Dir(staticFolderLocation)
+// NOTE: Disable serving static folder since using docker
+// func serveStaticFolder(r *mux.Router, staticFolderLocation string) {
+// 	staticFolder := http.Dir(staticFolderLocation)
 
-	// serve static file
-	r.PathPrefix("/").Handler(
-		http.FileServer(staticFolder),
-	)
-}
+// 	// serve static file
+// 	r.PathPrefix("/").Handler(
+// 		http.FileServer(staticFolder),
+// 	)
+// }

@@ -11,11 +11,15 @@ func (s *Student) scanStudent(v interface{}) error {
 
 	var args = []interface{}{
 		&s.UserAlias,
+		&s.ClassCode,
+		&s.ClassNo,
 		&priorities,
 		&s.IsX3,
 		&s.IsConfirmed,
 		&s.Rank,
 		&s.Timestamp,
+		&s.Name,
+		&s.Cname,
 	}
 
 	switch t := v.(type) {

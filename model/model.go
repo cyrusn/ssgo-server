@@ -15,11 +15,13 @@ type schema struct {
 	content string
 }
 
-const ERR_DATABASE_EXIST = "Database exists"
+const ERR_DATABASE_EXIST = "database exists"
 
 const credentialTableSchema = `
 CREATE TABLE IF NOT EXISTS Credential (
   userAlias varchar(64) PRIMARY KEY,
+  name varchar(64),
+  cname varchar(64),
   password BLOB(128) NOT NULL,
   role varchar(64) NOT NULL
 );`
@@ -27,6 +29,8 @@ CREATE TABLE IF NOT EXISTS Credential (
 const studentTableSchema = `
 CREATE TABLE IF NOT EXISTS Student (
   userAlias varchar(64) PRIMARY KEY,
+	classCode TINYTEXT,
+	classNo INTEGER,
 	priorities BLOB,
 	isX3 BOOLEAN,
 	isConfirmed BOOLEAN,
@@ -96,11 +100,12 @@ func CreateDatabase(dsn string, isOverWrite bool) error {
 	}
 
 	db, err := sql.Open("mysql", rootDSN)
-	defer db.Close()
 
 	if err != nil {
 		return err
 	}
+
+	defer db.Close()
 
 	if err := IsDatabaseExist(db, dbName); err != nil {
 		return createDBAndTable(db, dbName)

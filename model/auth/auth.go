@@ -30,12 +30,16 @@ type Credential struct {
 	UserAlias string `json:"userAlias"`
 	Password  string `json:"password"`
 	Role      string `json:"role"`
+	Name      string `json:"name"`
+	CName     string `json:"cname"`
 }
 
 // Claims is jwt.Claims for authentication credential
 type Claims struct {
 	UserAlias string
 	Role      string
+	Name      string
+	Cname     string
 	jwt.StandardClaims
 }
 
@@ -59,10 +63,14 @@ func (db *DB) Insert(c *Credential) error {
 	_, err = db.Exec(
 		`INSERT INTO Credential (
       userAlias,
+			name,
+			cname,
       password,
       role
-    ) values (?, ?, ?)`,
+    ) values (?, ?, ?, ?, ?)`,
 		c.UserAlias,
+		c.Name,
+		c.CName,
 		hashedPassword,
 		c.Role,
 	)
@@ -72,11 +80,13 @@ func (db *DB) Insert(c *Credential) error {
 func (db *DB) Authenticate(userAlias, password string) (string, error) {
 	hashedPassword := []byte{}
 	role := ""
+	name := ""
+	cname := ""
 
 	err := db.QueryRow(
-		`SELECT password, role FROM Credential WHERE useralias=?`,
+		`SELECT name, cname, password, role FROM Credential WHERE useralias=?`,
 		userAlias,
-	).Scan(&hashedPassword, &role)
+	).Scan(&name, &cname, &hashedPassword, &role)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -94,6 +104,8 @@ func (db *DB) Authenticate(userAlias, password string) (string, error) {
 
 	claims := Claims{
 		UserAlias: userAlias,
+		Name:      name,
+		Cname:     cname,
 		Role:      role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiresAfter(lifeTime),
